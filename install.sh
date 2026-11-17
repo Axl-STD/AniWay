@@ -22,7 +22,10 @@ while [ $# -gt 0 ]; do
 done
 
 BINS=(aniway aniwayd aniway-editor)
-ICON=$PREFIX/share/icons/hicolor/scalable/apps/$APP_ID.svg
+ICONS=$PREFIX/share/icons/hicolor/scalable/apps
+ICON=$ICONS/$APP_ID.svg
+# Tray icons under their own names: some panels (Quickshell) ignore the theme path the tray item sends.
+TRAY_ICONS=(aniway-tray-light aniway-tray-dark)
 DESKTOP=$PREFIX/share/applications/$APP_ID.desktop
 
 say() { printf '\033[1m%s\033[0m\n' "$*"; }
@@ -36,6 +39,7 @@ refresh_caches() {
 if $UNINSTALL; then
   for b in "${BINS[@]}"; do rm -fv "$PREFIX/bin/$b"; done
   rm -fv "$PREFIX"/share/locale/*/LC_MESSAGES/aniway.mo "$ICON" "$DESKTOP"
+  for i in "${TRAY_ICONS[@]}"; do rm -fv "$ICONS/$i.svg"; done
   refresh_caches
   say "AniWay removed. Settings and scenes are still in ~/.config/aniway."
   exit 0
@@ -78,6 +82,7 @@ for mo in target/locale/*/LC_MESSAGES/aniway.mo; do
   install -Dm644 "$mo" "$PREFIX/share/locale/$lang/LC_MESSAGES/aniway.mo"
 done
 install -Dm644 crates/aniway-editor/resources/icons/aniway-light.svg "$ICON"
+for i in "${TRAY_ICONS[@]}"; do install -Dm644 "crates/aniway-editor/resources/icons/$i.svg" "$ICONS/$i.svg"; done
 mkdir -p "$(dirname "$DESKTOP")"
 cat >"$DESKTOP" <<EOF
 [Desktop Entry]
