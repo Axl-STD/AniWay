@@ -189,11 +189,17 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
         .build();
     start.connect_clicked(|_| start_daemon());
     let down = adw::StatusPage::builder()
-        .icon_name("media-playback-stop-symbolic")
+        .icon_name(crate::theme::logo())
         .title(tr("AniWay is not running"))
         .description(tr("The daemon draws the overlays; this editor only controls it."))
         .child(&start)
         .build();
+    // The logo comes in a light and a dark drawing; follow the theme.
+    adw::StyleManager::default().connect_dark_notify(glib::clone!(
+        #[weak]
+        down,
+        move |_| down.set_icon_name(Some(crate::theme::logo()))
+    ));
     let pages = gtk::Stack::new();
     pages.add_named(&main, Some("main"));
     pages.add_named(&down, Some("down"));
