@@ -271,7 +271,7 @@ fn autostart(cmd: &AutostartCmd) -> Result<()> {
             let exec = sibling_daemon().ok_or_else(|| anyhow!("aniwayd not found next to this executable"))?;
             autostart::enable(&exec).context("writing the systemd user unit")?;
             println!("autostart enabled: {}", exec.display());
-            println!("takes effect at the next login (after lingering: systemctl --user daemon-reload)");
+            println!("takes effect at the next login");
         }
         AutostartCmd::Off => {
             autostart::disable().context("removing the systemd user unit")?;

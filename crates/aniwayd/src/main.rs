@@ -103,7 +103,9 @@ fn init_i18n() {
 fn run() -> Result<()> {
     mpv::limit_arenas();
     init_i18n();
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
+    // Our own messages at info; libraries (zbus logs every D-Bus call at info) only when they warn.
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn,aniwayd=info,aniway_proto=info"))
+        .init();
     let exe = std::env::current_exe().ok();
     for note in aniway_proto::legacy::migrate(exe.as_deref()) {
         log::info!("{note}");

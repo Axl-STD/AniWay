@@ -1,4 +1,6 @@
-//! Optional systemd user unit that starts the daemon with the graphical session. Plain file operations only.
+//! Optional systemd user unit that starts the daemon with the graphical session. Plain file operations, followed
+//! by a reload of the user manager: it outlives logouts, so without one it keeps the old unit graph and the next
+//! login would not start the daemon.
 
 use crate::paths::xdg_config_home;
 use std::io;
@@ -40,7 +42,9 @@ fn unit_text(exec: &Path) -> String {
 
 /// Writes the unit (atomically) and enables it; safe to repeat, which also refreshes `ExecStart`.
 pub fn enable(exec: &Path) -> io::Result<()> {
-    enable_in(&xdg_config_home(), exec)
+    enable_in(&xdg_config_home(), exec)?;
+    reload();
+    Ok(())
 }
 
 fn enable_in(base: &Path, exec: &Path) -> io::Result<()> {
@@ -54,7 +58,22 @@ fn enable_in(base: &Path, exec: &Path) -> io::Result<()> {
 }
 
 pub fn disable() -> io::Result<()> {
-    disable_in(&xdg_config_home())
+    disable_in(&xdg_config_home())?;
+    reload();
+    Ok(())
+}
+
+/// Asks the user manager to reread its units, in the background; without systemd there is nothing to tell.
+fn reload() {
+    let child = std::process::Command::new("systemctl")
+        .args(["--user", "daemon-reload"])
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn();
+    if let Ok(mut child) = child {
+        drop(std::thread::spawn(move || child.wait()));
+    }
 }
 
 fn disable_in(base: &Path) -> io::Result<()> {
@@ -71,7 +90,11 @@ fn remove_if_exists(path: &Path) -> io::Result<()> {
 
 /// Replaces a unit of the former name with ours, enabled the same way, running `exec`. Returns whether one existed.
 pub fn migrate_legacy(exec: &Path) -> io::Result<bool> {
-    migrate_legacy_in(&xdg_config_home(), exec)
+    let migrated = migrate_legacy_in(&xdg_config_home(), exec)?;
+    if migrated {
+        reload();
+    }
+    Ok(migrated)
 }
 
 fn migrate_legacy_in(base: &Path, exec: &Path) -> io::Result<bool> {
