@@ -63,8 +63,7 @@ aniway scene load night
 aniway --help
 ```
 
-Settings and scenes live in `~/.config/aniway/`. More in [`docs/architecture.md`](docs/architecture.md) and
-[`docs/editor.md`](docs/editor.md).
+Settings and scenes live in `~/.config/aniway/`.
 
 ## License
 

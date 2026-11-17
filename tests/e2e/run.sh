@@ -263,7 +263,7 @@ small_videos() { # count max-cpu-percent max-lost-percent
 }
 
 # Small videos (S6 and S15), the hwdec switch of a big video, and a create/destroy leak check. The CPU limits are
-# loose regression guards: CPU on a shared machine varies by about 10 % between runs (see architecture.md, Phase 1.3).
+# loose regression guards: CPU on a shared machine varies by about 10 % between runs.
 c13() {
   small_videos 6 50 0
   small_videos 15 90 1
