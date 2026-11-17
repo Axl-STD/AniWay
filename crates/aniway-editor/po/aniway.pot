@@ -1,0 +1,828 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the aniway package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: aniway\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-17 11:43-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: src/client.rs:293
+msgid "Overlay removed"
+msgstr ""
+
+#: src/client.rs:293
+msgid "Undo"
+msgstr ""
+
+#: src/dropzone.rs:91 src/window.rs:40 src/window.rs:64
+msgid "Add media"
+msgstr ""
+
+#: src/dropzone.rs:121
+#, rust-format
+msgid "Drop media to add it to {}"
+msgstr ""
+
+#: src/dropzone.rs:122
+msgid "Videos, GIFs and images become overlays. Or click to browse."
+msgstr ""
+
+#: src/dropzone.rs:124
+msgid "Drop media here"
+msgstr ""
+
+#: src/dropzone.rs:125
+msgid "or click to browse · several at once"
+msgstr ""
+
+#: src/inspector.rs:155 src/inspector.rs:341
+msgid "Pause the preview"
+msgstr ""
+
+#: src/inspector.rs:167 src/list.rs:71
+msgid "Monitor"
+msgstr ""
+
+#: src/inspector.rs:173
+msgid "X offset"
+msgstr ""
+
+#: src/inspector.rs:174
+msgid "Y offset"
+msgstr ""
+
+#: src/inspector.rs:176
+msgid "Exact size"
+msgstr ""
+
+#: src/inspector.rs:177
+msgid "Width"
+msgstr ""
+
+#: src/inspector.rs:178
+msgid "Height"
+msgstr ""
+
+#: src/inspector.rs:180
+msgid "Speed"
+msgstr ""
+
+#: src/inspector.rs:183
+msgid "Above everything"
+msgstr ""
+
+#: src/inspector.rs:183
+msgid "Above windows"
+msgstr ""
+
+#: src/inspector.rs:183
+msgid "Below windows"
+msgstr ""
+
+#: src/inspector.rs:183
+msgid "Desktop background"
+msgstr ""
+
+#: src/inspector.rs:182
+msgid "Layer"
+msgstr ""
+
+#: src/inspector.rs:185
+msgid "Loop"
+msgstr ""
+
+#: src/inspector.rs:187
+msgid "Visible"
+msgstr ""
+
+#: src/inspector.rs:188
+msgid "Playing"
+msgstr ""
+
+#: src/inspector.rs:189
+msgid "Limit frame rate"
+msgstr ""
+
+#: src/inspector.rs:190
+msgid "Frames per second"
+msgstr ""
+
+#: src/inspector.rs:191
+msgid "Automatic"
+msgstr ""
+
+#: src/inspector.rs:191
+msgid "Hardware"
+msgstr ""
+
+#: src/inspector.rs:191
+msgid "Software"
+msgstr ""
+
+#: src/inspector.rs:191
+msgid "Decoding"
+msgstr ""
+
+#: src/inspector.rs:192
+msgid "Optimized copy"
+msgstr ""
+
+#: src/inspector.rs:193
+msgid "Overflow"
+msgstr ""
+
+#: src/inspector.rs:202
+msgid "Top left"
+msgstr ""
+
+#: src/inspector.rs:203
+msgid "Top"
+msgstr ""
+
+#: src/inspector.rs:204
+msgid "Top right"
+msgstr ""
+
+#: src/inspector.rs:205
+msgid "Left"
+msgstr ""
+
+#: src/inspector.rs:206
+msgid "Center"
+msgstr ""
+
+#: src/inspector.rs:207
+msgid "Right"
+msgstr ""
+
+#: src/inspector.rs:208
+msgid "Bottom left"
+msgstr ""
+
+#: src/inspector.rs:209
+msgid "Bottom"
+msgstr ""
+
+#: src/inspector.rs:210
+msgid "Bottom right"
+msgstr ""
+
+#: src/inspector.rs:217
+msgid "Choose another file…"
+msgstr ""
+
+#: src/inspector.rs:220
+msgid "Choose another file"
+msgstr ""
+
+#: src/inspector.rs:239
+msgid "Anchor"
+msgstr ""
+
+#: src/inspector.rs:244 src/map.rs:534
+msgid "Scale"
+msgstr ""
+
+#: src/inspector.rs:247
+msgid "Opacity"
+msgstr ""
+
+#: src/inspector.rs:248
+msgid "No audio"
+msgstr ""
+
+#: src/inspector.rs:248
+msgid "Volume"
+msgstr ""
+
+#: src/inspector.rs:268
+msgid ""
+"Above everything also covers fullscreen apps; Above windows stays under them."
+msgstr ""
+
+#: src/inspector.rs:270
+msgid ""
+"Lets up to half of the overlay go past the monitor edges, to hide "
+"transparent margins. Off brings it back inside."
+msgstr ""
+
+#: src/inspector.rs:274
+msgid "Placement"
+msgstr ""
+
+#: src/inspector.rs:276
+msgid "Size and look"
+msgstr ""
+
+#: src/inspector.rs:278
+msgid "Playback"
+msgstr ""
+
+#: src/inspector.rs:280
+msgid "Performance"
+msgstr ""
+
+#: src/inspector.rs:341
+msgid "Play the preview"
+msgstr ""
+
+#: src/inspector.rs:464
+msgid "Add media to get started"
+msgstr ""
+
+#: src/inspector.rs:464
+msgid "Select an overlay"
+msgstr ""
+
+#: src/inspector.rs:466
+msgid "Drop videos, GIFs or images on the list, or use Add in the header bar."
+msgstr ""
+
+#: src/inspector.rs:468
+msgid "Pick one in the list or on the map."
+msgstr ""
+
+#: src/inspector.rs:498
+msgid "size unknown"
+msgstr ""
+
+#: src/inspector.rs:502
+msgid "animation"
+msgstr ""
+
+#: src/inspector.rs:503
+msgid "still image"
+msgstr ""
+
+#: src/inspector.rs:507
+#, rust-format
+msgid "{} dropped frame"
+msgid_plural "{} dropped frames"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/inspector.rs:545
+msgid "Building the optimized copy"
+msgstr ""
+
+#: src/inspector.rs:546
+msgid "Optimized copy ready"
+msgstr ""
+
+#: src/inspector.rs:548
+#, rust-format
+msgid "Failed: {}"
+msgstr ""
+
+#: src/inspector.rs:548
+msgid "unknown error"
+msgstr ""
+
+#: src/list.rs:56
+#, rust-format
+msgid "Remove {}?"
+msgstr ""
+
+#: src/list.rs:57
+msgid "It leaves the screen and this scene. The file itself is kept."
+msgstr ""
+
+#: src/list.rs:59 src/scenes.rs:121 src/scenes.rs:273
+msgid "Cancel"
+msgstr ""
+
+#: src/list.rs:59 src/prefs.rs:325
+msgid "Remove"
+msgstr ""
+
+#: src/list.rs:72
+msgid "Format"
+msgstr ""
+
+#: src/list.rs:73
+msgid "Length"
+msgstr ""
+
+#: src/list.rs:104
+msgid "Remove…"
+msgstr ""
+
+#: src/list.rs:120
+msgid "Monitor disconnected"
+msgstr ""
+
+#: src/list.rs:122
+msgid "Hidden"
+msgstr ""
+
+#: src/list.rs:124
+msgid "All overlays are hidden"
+msgstr ""
+
+#: src/list.rs:126
+msgid "Hidden by an app rule"
+msgstr ""
+
+#: src/list.rs:128
+msgid "All overlays are paused"
+msgstr ""
+
+#: src/list.rs:166
+msgid "Overlays"
+msgstr ""
+
+#: src/list.rs:236
+msgid "software decoding"
+msgstr ""
+
+#: src/list.rs:238
+#, rust-format
+msgid "{} overlay"
+msgid_plural "{} overlays"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/map.rs:254
+#, rust-format
+msgid "{} on {}, x {}, y {}"
+msgstr ""
+
+#: src/map.rs:261
+msgid "Monitor map"
+msgstr ""
+
+#: src/map.rs:531
+msgid "Active monitors"
+msgstr ""
+
+#: src/map.rs:557
+#, rust-format
+msgid "No overlays on {}"
+msgstr ""
+
+#: src/map.rs:558
+msgid "Drop media anywhere in the window"
+msgstr ""
+
+#: src/prefs.rs:54 src/window.rs:66 src/window.rs:235
+msgid "Preferences"
+msgstr ""
+
+#: src/prefs.rs:61
+msgid "Language"
+msgstr ""
+
+#: src/prefs.rs:61
+msgid "System default"
+msgstr ""
+
+#: src/prefs.rs:62
+msgid "Show in the panel tray"
+msgstr ""
+
+#: src/prefs.rs:63
+msgid "Start at login"
+msgstr ""
+
+#: src/prefs.rs:65
+msgid "Hardware decoding"
+msgstr ""
+
+#: src/prefs.rs:66
+msgid "Automatic (safe)"
+msgstr ""
+
+#: src/prefs.rs:66
+msgid "Off"
+msgstr ""
+
+#: src/prefs.rs:66
+msgid "Other…"
+msgstr ""
+
+#: src/prefs.rs:68
+msgid "Decoder name (mpv hwdec value)"
+msgstr ""
+
+#: src/prefs.rs:69
+msgid "Minimum video height for hardware decoding"
+msgstr ""
+
+#: src/prefs.rs:71
+msgid "Hide for apps"
+msgstr ""
+
+#: src/prefs.rs:72
+msgid ""
+"Overlays on a monitor hide while a window of one of these classes is focused "
+"there."
+msgstr ""
+
+#: src/prefs.rs:75
+msgid "Allow optimized copies"
+msgstr ""
+
+#: src/prefs.rs:76
+msgid "Copy format"
+msgstr ""
+
+#: src/prefs.rs:76
+msgid "Uncompressed if it fits"
+msgstr ""
+
+#: src/prefs.rs:76
+msgid "Always compressed"
+msgstr ""
+
+#: src/prefs.rs:77
+msgid "Largest uncompressed copy per file (MB)"
+msgstr ""
+
+#: src/prefs.rs:78
+msgid "Cache size (MB)"
+msgstr ""
+
+#: src/prefs.rs:90
+msgid "System"
+msgstr ""
+
+#: src/prefs.rs:91
+msgid "Graphite coral"
+msgstr ""
+
+#: src/prefs.rs:92
+msgid "Graphite amber"
+msgstr ""
+
+#: src/prefs.rs:93
+msgid "Midnight violet"
+msgstr ""
+
+#: src/prefs.rs:94
+msgid "Midnight mint"
+msgstr ""
+
+#: src/prefs.rs:95
+msgid "Midnight white"
+msgstr ""
+
+#: src/prefs.rs:96
+msgid "Paper coral"
+msgstr ""
+
+#: src/prefs.rs:97
+msgid "Paper blue"
+msgstr ""
+
+#: src/prefs.rs:132
+msgid "Appearance"
+msgstr ""
+
+#: src/prefs.rs:135
+msgid "Takes effect when the editor restarts."
+msgstr ""
+
+#: src/prefs.rs:144
+msgid ""
+"An icon that shows AniWay runs in the background, with pause, hide and quit."
+msgstr ""
+
+#: src/prefs.rs:145
+msgid "General"
+msgstr ""
+
+#: src/prefs.rs:147
+msgid "Video decoding"
+msgstr ""
+
+#: src/prefs.rs:151
+msgid "Add a window class"
+msgstr ""
+
+#: src/prefs.rs:164
+msgid ""
+"Optimized copies of media drawn much smaller. Uncompressed copies cost disk "
+"space instead of CPU."
+msgstr ""
+
+#: src/prefs.rs:167
+msgid "Optimized copies"
+msgstr ""
+
+#: src/prefs.rs:213
+msgid "The new language shows after a restart"
+msgstr ""
+
+#: src/prefs.rs:213
+msgid "Restart"
+msgstr ""
+
+#: src/prefs.rs:277
+msgid "Starts the daemon with your graphical session."
+msgstr ""
+
+#: src/prefs.rs:285
+msgid ""
+"This session does not start graphical-session.target: add aniwayd to your "
+"compositor config instead."
+msgstr ""
+
+#: src/prefs.rs:327
+#, rust-format
+msgid "Remove {}"
+msgstr ""
+
+#: src/scenes.rs:90
+msgid "Name"
+msgstr ""
+
+#: src/scenes.rs:96
+msgid "Record a shortcut"
+msgstr ""
+
+#: src/scenes.rs:102
+msgid "Remove the shortcut"
+msgstr ""
+
+#: src/scenes.rs:104
+msgid "Shortcut"
+msgstr ""
+
+#: src/scenes.rs:112
+msgid ""
+"Optional: switches to this scene from anywhere, even with the editor closed."
+msgstr ""
+
+#: src/scenes.rs:130
+msgid "None"
+msgstr ""
+
+#: src/scenes.rs:137
+msgid "Press the keys…"
+msgstr ""
+
+#: src/scenes.rs:229 src/window.rs:65 src/window.rs:215
+msgid "New scene"
+msgstr ""
+
+#: src/scenes.rs:229
+msgid "Create"
+msgstr ""
+
+#: src/scenes.rs:241
+msgid "Duplicate scene"
+msgstr ""
+
+#: src/scenes.rs:241
+msgid "Duplicate"
+msgstr ""
+
+#: src/scenes.rs:254
+#, rust-format
+msgid "Edit scene {}"
+msgstr ""
+
+#: src/scenes.rs:256
+msgid "Save"
+msgstr ""
+
+#: src/scenes.rs:270
+#, rust-format
+msgid "Delete scene {}?"
+msgstr ""
+
+#: src/scenes.rs:271
+msgid "The scene file is removed from disk, with its shortcut."
+msgstr ""
+
+#: src/scenes.rs:273
+msgid "Delete"
+msgstr ""
+
+#: src/scenes.rs:307
+msgid "New empty scene…"
+msgstr ""
+
+#: src/scenes.rs:308
+msgid "Duplicate this scene…"
+msgstr ""
+
+#: src/scenes.rs:310
+msgid "Changes save to the active scene as you make them."
+msgstr ""
+
+#: src/scenes.rs:318 src/scenes.rs:334
+msgid "Scenes"
+msgstr ""
+
+#: src/scenes.rs:336
+msgid "Rename or set a shortcut…"
+msgstr ""
+
+#: src/scenes.rs:336
+msgid "Delete scene…"
+msgstr ""
+
+#: src/scenes.rs:427
+#, rust-format
+msgid "Scene: {}"
+msgstr ""
+
+#: src/window.rs:57
+msgid "Nudge the selected overlay by 1 px"
+msgstr ""
+
+#: src/window.rs:58
+msgid "Nudge by 10 px"
+msgstr ""
+
+#: src/window.rs:59
+msgid "Disable snapping while dragging"
+msgstr ""
+
+#: src/window.rs:60
+msgid "Select the next overlay"
+msgstr ""
+
+#: src/window.rs:61
+msgid "Select the previous overlay"
+msgstr ""
+
+#: src/window.rs:62
+msgid "Show monitor 1 to 9"
+msgstr ""
+
+#: src/window.rs:63
+msgid "Remove the selected overlay (asks first)"
+msgstr ""
+
+#: src/window.rs:67 src/window.rs:236
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: src/window.rs:86
+msgid ""
+"Videos, GIFs and images as click-through overlays on your Hyprland monitors. "
+"Place them on a map of your screens, group them in scenes with their own "
+"shortcuts, and choose for each one whether it stays above fullscreen apps or "
+"under your windows.\n"
+"\n"
+"A small background service draws them with libmpv; this editor only controls "
+"it, so the overlays keep running with the editor closed."
+msgstr ""
+
+#: src/window.rs:92
+msgid ""
+"Playback and decoding. Depending on how your distribution builds them, they "
+"are LGPL or GPL software; AniWay is GPL so that either works."
+msgstr ""
+
+#: src/window.rs:99
+msgid "Bundled fonts, under the SIL Open Font License 1.1."
+msgstr ""
+
+#: src/window.rs:102
+msgid "Built on"
+msgstr ""
+
+#: src/window.rs:149
+msgid "Drag or use the arrow keys"
+msgstr ""
+
+#: src/window.rs:150
+msgid "10 px steps"
+msgstr ""
+
+#: src/window.rs:151
+msgid "no snapping"
+msgstr ""
+
+#: src/window.rs:152
+msgid "next overlay"
+msgstr ""
+
+#: src/window.rs:179
+msgid "Connection to AniWay lost. Reconnecting…"
+msgstr ""
+
+#: src/window.rs:186
+msgid "Start"
+msgstr ""
+
+#: src/window.rs:193
+msgid "AniWay is not running"
+msgstr ""
+
+#: src/window.rs:194
+msgid "The daemon draws the overlays; this editor only controls it."
+msgstr ""
+
+#: src/window.rs:209
+msgid "Add"
+msgstr ""
+
+#: src/window.rs:213
+msgid "Add media (several at once)"
+msgstr ""
+
+#: src/window.rs:219
+msgid "New empty scene; the current one stays as it is"
+msgstr ""
+
+#: src/window.rs:222 src/window.rs:224 src/window.rs:225
+#: ../aniwayd/src/tray.rs:98
+msgid "Pause all"
+msgstr ""
+
+#: src/window.rs:228
+msgid "Hide until shown"
+msgstr ""
+
+#: src/window.rs:228
+msgid "Hide for 15 minutes"
+msgstr ""
+
+#: src/window.rs:228
+msgid "Hide for 1 hour"
+msgstr ""
+
+#: src/window.rs:232
+msgid "Hide 15 min"
+msgstr ""
+
+#: src/window.rs:237
+msgid "About AniWay"
+msgstr ""
+
+#: src/window.rs:239
+msgid "Main menu"
+msgstr ""
+
+#: src/window.rs:250
+msgid "Overlay list"
+msgstr ""
+
+#: src/window.rs:254
+msgid "Inspector"
+msgstr ""
+
+#: src/window.rs:388
+#, rust-format
+msgid "Show ({} min left)"
+msgstr ""
+
+#: src/window.rs:388
+msgid "Show"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:70
+msgid "Overlays hidden"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:71
+msgid "Overlays paused"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:72
+msgid "Overlays running"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:83
+msgid "Show overlays"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:86
+msgid "Hide overlays"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:89
+msgid "Until I show them"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:90
+msgid "For 15 minutes"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:91
+msgid "For 1 hour"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:106
+msgid "Open editor"
+msgstr ""
+
+#: ../aniwayd/src/tray.rs:111
+msgid "Quit AniWay"
+msgstr ""

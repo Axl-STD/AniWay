@@ -1,0 +1,18 @@
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <style>
+      .cls-1{fill:none;stroke:#ffffff;stroke-width:4;stroke-miterlimit:10}
+      .cls-2{fill:none;stroke:#ffffff;stroke-width:6;stroke-linejoin:bevel}
+      .cls-3{fill:#ffffff}
+      .cls-4{fill:none;stroke:#ffffff;stroke-width:3;stroke-linejoin:round}
+      .cls-5{fill:none;stroke:#ffffff;stroke-width:3;stroke-miterlimit:10}
+    </style>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <rect x="25.541" y="30.767" width="79.07" height="53.071" class="cls-2"/>
+    <polygon points="48.984,86.037 51.972,94.445 37.442,103.362 90.558,103.362 76.681,94.445 80.107,86.037" class="cls-3"/>
+    <polygon points="43.823,50.091 80.622,41.715 85.811,64.514 49.012,72.89" class="cls-4"/>
+    <path d="M52.32 54.623 C52.313 54.595 54.39 54.07 56.958 53.449 C59.527 52.828 61.615 52.347 61.621 52.375 C61.628 52.403 59.551 52.928 56.982 53.549 C54.414 54.169 52.326 54.65 52.32 54.623 Z" class="cls-5"/>
+    <line x1="84.12" y1="57.081" x2="73.47" y2="67.323" class="cls-5"/>
+  </g>
+</svg>

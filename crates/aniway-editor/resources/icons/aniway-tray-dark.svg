@@ -1,0 +1,18 @@
+<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1{fill:none;stroke:#222023;stroke-width:0.75;stroke-linejoin:bevel}
+      .cls-2{fill:#222023;stroke:#222023;stroke-width:0.25;stroke-linejoin:round}
+      .cls-3{fill:#222023;stroke:#222023;stroke-width:0.25;stroke-miterlimit:10}
+      .cls-4{fill:none;stroke:#222023;stroke-width:0.25;stroke-linejoin:round}
+      .cls-5{fill:none;stroke:#222023;stroke-width:0.25;stroke-miterlimit:10}
+    </style>
+  </defs>
+  <g id="Layer_1" data-name="Layer 1">
+    <rect x="2.332" y="2.897" width="11.336" height="7.608" class="cls-1"/>
+    <polygon points="5.693,10.821 6.122,12.026 4.039,13.304 11.653,13.304 9.664,12.026 10.155,10.821" class="cls-2"/>
+    <polygon points="4.953,5.668 10.229,4.467 10.972,7.735 5.697,8.936" class="cls-4"/>
+    <path d="M6.171 6.317 C6.17 6.313 6.468 6.238 6.836 6.149 C7.205 6.06 7.504 5.991 7.505 5.995 C7.506 5.999 7.208 6.074 6.84 6.163 C6.472 6.252 6.172 6.321 6.171 6.317 Z" class="cls-5"/>
+    <line x1="10.73" y1="6.67" x2="9.203" y2="8.138" class="cls-5"/>
+  </g>
+</svg>

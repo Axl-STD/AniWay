@@ -1,0 +1,25 @@
+[package]
+name = "aniwayd"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+anyhow.workspace = true
+calloop = { version = "0.14", features = ["signals"] }
+env_logger = { version = "0.11", default-features = false }
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+khronos-egl = { version = "6", features = ["static"] }
+ksni = { version = "0.3", default-features = false, features = ["async-io", "blocking"] }
+log = "0.4"
+notify = { version = "8", default-features = false, features = ["macos_fsevent"] }
+aniway-proto = { path = "../proto" }
+rustix = { version = "1", features = ["fs"] }
+serde.workspace = true
+serde_json.workspace = true
+smithay-client-toolkit = { version = "0.21", default-features = false, features = ["calloop", "system"] }
+wayland-egl = "0.32"
+
+[build-dependencies]
+pkg-config = "0.3"
