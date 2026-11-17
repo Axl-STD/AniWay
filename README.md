@@ -1,57 +1,71 @@
-# AniWay
+<img width="1280" height="640" alt="AniWay" src="https://github.com/user-attachments/assets/e3874a00-f9c1-4ce4-8c07-f7459760e4f7" />
 
-Stickers animados para tu escritorio Wayland. Vídeos, GIF, APNG, WebP e imágenes como overlays que dejan pasar los
-clics, sobre cualquiera de tus monitores. Colócalos en un mapa de tus pantallas, agrúpalos en escenas con sus propios
-atajos y elige para cada uno si queda por encima de las apps a pantalla completa o debajo de tus ventanas.
+Animated stickers for your Wayland desktop. Videos, GIFs, APNG, WebP and images become click-through overlays on any
+of your monitors. Place them on a map of your screens, group them in scenes with their own shortcuts, and choose for
+each one whether it stays above fullscreen apps or under your windows.
 
-Un pequeño servicio en segundo plano (`aniwayd`) los dibuja con libmpv y decodificación por hardware; el editor
-(`aniway-editor`) y la línea de comandos (`aniway`) solo lo controlan, así que los overlays siguen funcionando con el
-editor cerrado.
+A small background service (`aniwayd`) draws them with libmpv and hardware decoding; the editor (`aniway-editor`) and
+the command line (`aniway`) only control it, so the overlays keep running with the editor closed.
 
-## Funciones
+## Quick start
 
-- Cualquier medio que abra mpv: vídeo (también con transparencia), GIF, APNG, WebP animado e imágenes.
-- Editor con mapa de monitores: arrastra, ancla a 9 puntos, escala, opacidad, velocidad y capa
-  (sobre todo, sobre las ventanas, bajo las ventanas, fondo de escritorio).
-- Sobreposición: deja salir hasta la mitad de un objeto del borde del monitor para ocultar márgenes transparentes.
-- Escenas guardadas en TOML, con atajo de teclado propio en Hyprland.
-- Copias optimizadas de los medios que se dibujan mucho más pequeños, límite de fotogramas por objeto.
-- Icono en la bandeja, pausar u ocultar todo durante un rato, inicio automático opcional.
-- Siete temas, interfaz en español e inglés.
+```bash
+git clone https://github.com/Axl-STD/AniWay.git && cd AniWay && ./install.sh
+```
 
-## Compatibilidad
+The script checks the dependencies (and tells you the command to install any that are missing), builds AniWay and
+installs it into `~/.local`, with a launcher entry. Then:
 
-| | |
+```bash
+aniway daemon &        # start the service
+aniway-editor          # or open "AniWay" from your launcher
+```
+
+To start it with your session: `aniway autostart on`. To update: `git pull && ./install.sh`, then `aniway quit` and
+start it again. To remove it: `./install.sh --uninstall`.
+
+## Features
+
+- Anything mpv can open: video (with transparency too), GIF, APNG, animated WebP and still images.
+- Editor with a map of your monitors: drag, anchor to 9 points, scale, opacity, speed and layer
+  (above everything, above windows, below windows, desktop background).
+- Overflow: lets up to half of an overlay go past the monitor edge, to hide transparent margins of the media.
+- Scenes stored as TOML, each with its own keyboard shortcut on Hyprland.
+- Optimized copies of media that is drawn much smaller than its size, and a per-overlay frame rate limit.
+- Tray icon, pause or hide everything for a while, optional start at login.
+- Seven themes; English and Spanish interface.
+
+## Compatibility
+
+| Compositor | Status |
 |---|---|
-| Hyprland | Probado con 0.57. Todas las funciones. |
-| Otros compositores con `wlr-layer-shell` (Sway, river, Wayfire, labwc, niri, KDE Plasma, COSMIC) | Debería funcionar, sin probar. Sin atajos de escena ni reglas por clase de ventana. |
-| GNOME, X11 | No compatible (no tienen layer-shell). |
+| Hyprland | Tested on 0.57. Every feature. |
+| Other compositors with `wlr-layer-shell` (Sway, river, Wayfire, labwc, niri, KDE Plasma, COSMIC) | Should work, untested. No scene shortcuts or window-class rules. |
+| GNOME, X11 | Not supported (no layer-shell). |
 
-## Compilar
+## Building by hand
 
-Necesitas Rust (stable), `mpv` (libmpv), GTK 4.14+, libadwaita 1.8+, gettext y `ffmpeg` (`ffprobe` para las
-miniaturas y la información de los medios).
+Requirements: Rust (stable), libmpv 2.0+, GTK 4.14+, libadwaita 1.8+, gettext and ffmpeg (`ffprobe` for media
+information and thumbnails, `ffmpeg` for optimized copies).
 
 ```bash
 cargo build --release --workspace --bins
+target/release/aniway daemon &
+target/release/aniway-editor
 ```
 
-Los binarios quedan en `target/release/`: `aniwayd`, `aniway` y `aniway-editor`.
-
-## Uso
+## Command line
 
 ```bash
-target/release/aniway daemon &      # inicia el servicio
-target/release/aniway-editor        # abre el editor
-target/release/aniway add ~/gif.gif --anchor bottom-right --scale 0.5
-target/release/aniway --help        # resto de comandos
+aniway add ~/sticker.gif --anchor bottom-right --scale 0.5
+aniway list
+aniway scene load night
+aniway --help
 ```
 
-Para que arranque con la sesión: `aniway autostart on`, o `exec-once` con `aniwayd` en tu configuración de Hyprland.
+Settings and scenes live in `~/.config/aniway/`. More in [`docs/architecture.md`](docs/architecture.md) and
+[`docs/editor.md`](docs/editor.md).
 
-La configuración y las escenas viven en `~/.config/aniway/`. Más detalles en [`docs/architecture.md`](docs/architecture.md)
-y [`docs/editor.md`](docs/editor.md).
-
-## Licencia
+## License
 
 [GPL-3.0](LICENSE).
