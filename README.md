@@ -32,14 +32,9 @@ A small background service (`aniwayd`) draws them with libmpv and hardware decod
 git clone https://github.com/Axl-STD/AniWay.git && cd AniWay && ./install.sh
 ```
 
-The script checks the dependencies (and tells you the command to install any that are missing), builds AniWay and installs it into `~/.local`, with a launcher entry. Then:
+The script checks the dependencies (and tells you the command to install any that are missing), builds AniWay, installs it into `~/.local` with a launcher entry, adds `~/.local/bin` to your PATH if needed, and starts it: the editor opens and the tray icon controls the service.
 
-```bash
-aniway daemon &        # start the service
-aniway-editor          # or open "AniWay" from your launcher
-```
-
-To start it with your session: `aniway autostart on`. To update: `git pull && ./install.sh`, then `aniway quit` and start it again. To remove it: `./install.sh --uninstall`.
+To start it with your session: `aniway autostart on`. To update: `git pull && ./install.sh` (the running version is replaced). To remove it: `./install.sh --uninstall`, or `--purge` to also delete settings and scenes.
 
 ---
 
