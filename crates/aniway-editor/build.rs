@@ -6,7 +6,10 @@ use std::process::Command;
 fn main() {
     println!("cargo:rerun-if-changed=po");
     let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap_or_default());
-    let Some(target) = out.ancestors().nth(4) else { return };
+    // OUT_DIR is <target>/<profile>/build/<pkg>[/<hash>]/out; the depth under build/ depends on the Cargo version.
+    let Some(target) = out.ancestors().find(|p| p.ends_with("build")).and_then(|p| p.parent()?.parent()) else {
+        return;
+    };
     for entry in std::fs::read_dir("po").into_iter().flatten().flatten() {
         let path = entry.path();
         let Some(lang) = path.file_stem().filter(|_| path.extension().is_some_and(|e| e == "po")) else { continue };
