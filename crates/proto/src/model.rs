@@ -76,6 +76,9 @@ pub struct Overlay {
     /// Lets the overlay go past the monitor edges by up to half its own size, to hide transparent margins; the part
     /// outside is not drawn. Off keeps it inside the monitor (the offset is clamped).
     pub overflow: bool,
+    pub flip_h: bool,
+    pub flip_v: bool,
+    pub rotation: u16,
 }
 
 impl Default for Overlay {
@@ -101,6 +104,9 @@ impl Default for Overlay {
             decode: Decode::Auto,
             optimize: true,
             overflow: false,
+            flip_h: false,
+            flip_v: false,
+            rotation: 0,
         }
     }
 }
@@ -131,15 +137,28 @@ pub struct OverlayPatch {
     pub decode: Option<Decode>,
     pub optimize: Option<bool>,
     pub overflow: Option<bool>,
+    pub flip_h: Option<bool>,
+    pub flip_v: Option<bool>,
+    pub rotation: Option<u16>,
 }
 
 impl OverlayPatch {
+    pub fn validate(&self) -> Result<(), String> {
+        if let Some(rotation) = self.rotation.filter(|r| !matches!(r, 0 | 90 | 180 | 270)) {
+            return Err(format!("rotation must be one of 0, 90, 180 or 270 degrees (got {rotation})"));
+        }
+        Ok(())
+    }
+
     /// Merges every present field into `o`; `id` is never merged.
     pub fn apply(self, o: &mut Overlay) {
         macro_rules! set {
             ($($f:ident),*) => { $(if let Some(v) = self.$f { o.$f = v; })* };
         }
-        set!(path, anchor, x, y, scale, opacity, speed, layer, volume, visible, playing, decode, optimize, overflow);
+        set!(
+            path, anchor, x, y, scale, opacity, speed, layer, volume, visible, playing, decode, optimize, overflow,
+            flip_h, flip_v, rotation
+        );
         if let Some(v) = self.max_fps {
             o.max_fps = (v > 0).then_some(v);
         }
@@ -441,6 +460,14 @@ mod tests {
         );
         let (c, _): (Config, _) = parse_toml("proxy_format = \"compressed\"\nraw_proxy_max_mb = 64").unwrap();
         assert_eq!((c.proxy_format, c.raw_proxy_max_mb), (ProxyFormat::Compressed, 64));
+    }
+
+    #[test]
+    fn transform_defaults_and_rotation_validation() {
+        let o = Overlay::default();
+        assert!(!o.flip_h && !o.flip_v && o.rotation == 0);
+        assert!(OverlayPatch { rotation: Some(45), ..Default::default() }.validate().is_err());
+        assert!(OverlayPatch { rotation: Some(90), ..Default::default() }.validate().is_ok());
     }
 
     #[test]

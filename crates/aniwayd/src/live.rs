@@ -177,6 +177,9 @@ impl App {
         if old.volume != ov.volume {
             live.player.set_volume(ov.volume);
         }
+        if old.flip_h != ov.flip_h || old.flip_v != ov.flip_v || old.rotation != ov.rotation {
+            live.player.set_transform(ov);
+        }
         live.applied = ov.clone();
 
         let name = output.1.name.clone().unwrap_or_default();

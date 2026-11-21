@@ -64,7 +64,21 @@ def warm(path, args):
     return f"n={sum(1 for _x, _y, r, _g, b in region(path, args) if r > 200 and b < 120)}"
 
 
-COMMANDS = {"bbox": bbox, "halo": halo, "stripes": stripes, "diff": diff, "warm": warm}
+def quad(path, args):
+    x, y, w, h = (int(a) for a in args)
+    points = [(x + w // 4, y + h // 4), (x + 3 * w // 4, y + h // 4),
+              (x + w // 4, y + 3 * h // 4), (x + 3 * w // 4, y + 3 * h // 4)]
+    colors = []
+    for px, py in points:
+        r, g, b = next((r, g, b) for _x, _y, r, g, b in region(path, (px, py, 1, 1)))
+        colors.append(max(("red", "green", "yellow", "magenta"), key={
+            "red": r - g - b / 2, "green": g - r - b / 2,
+            "yellow": r + g - 2 * b, "magenta": r + b - 2 * g,
+        }.get))
+    return "tl=%s tr=%s bl=%s br=%s" % tuple(colors)
+
+
+COMMANDS = {"bbox": bbox, "halo": halo, "stripes": stripes, "diff": diff, "warm": warm, "quad": quad}
 
 if __name__ == "__main__":
     print(COMMANDS[sys.argv[1]](sys.argv[2], sys.argv[3:]))

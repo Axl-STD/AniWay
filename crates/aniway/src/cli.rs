@@ -30,6 +30,9 @@ enum Cmd {
         path: String,
         #[arg(long)]
         id: Option<String>,
+        /// Scene to add it to (default: the active one)
+        #[arg(long)]
+        scene: Option<String>,
         #[command(flatten)]
         opts: Opts,
     },
@@ -181,6 +184,15 @@ struct Opts {
     /// Let the overlay go past the monitor edges by up to half its size (true) or keep it inside (false)
     #[arg(long)]
     overflow: Option<bool>,
+    /// Mirror the media horizontally (true) or not (false)
+    #[arg(long)]
+    flip_h: Option<bool>,
+    /// Mirror the media vertically (true) or not (false)
+    #[arg(long)]
+    flip_v: Option<bool>,
+    /// Clockwise rotation in degrees: 0, 90, 180 or 270
+    #[arg(long)]
+    rotate: Option<u16>,
 }
 
 pub fn run() -> Result<()> {
@@ -189,8 +201,8 @@ pub fn run() -> Result<()> {
     }
     let request = match Cli::parse().cmd {
         Cmd::Daemon => return exec_daemon(),
-        Cmd::Add { path, id, opts } => {
-            Request::Add { overlay: OverlayPatch { id, path: Some(absolute(&path)), ..opts.patch()? } }
+        Cmd::Add { path, id, scene, opts } => {
+            Request::Add { overlay: OverlayPatch { id, path: Some(absolute(&path)), ..opts.patch()? }, scene }
         }
         Cmd::Set { id, path, opts } => {
             let patch = OverlayPatch { path: path.map(|p| absolute(&p)), ..opts.patch()? };
@@ -249,6 +261,9 @@ impl Opts {
             decode: self.decode.as_deref().map(parse_enum).transpose()?,
             optimize: self.optimize,
             overflow: self.overflow,
+            flip_h: self.flip_h,
+            flip_v: self.flip_v,
+            rotation: self.rotate,
             ..OverlayPatch::default()
         })
     }

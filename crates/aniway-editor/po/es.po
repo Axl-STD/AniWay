@@ -3,18 +3,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aniway\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-17 11:43-0600\n"
+"POT-Creation-Date: 2026-11-21 15:38-0600\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/client.rs:293
+#: src/client.rs:297
+#, rust-format
+msgid "Added to {}"
+msgstr "Añadido a {}"
+
+#: src/client.rs:316
 msgid "Overlay removed"
 msgstr "Overlay eliminado"
 
-#: src/client.rs:293
+#: src/client.rs:316
 msgid "Undo"
 msgstr "Deshacer"
 
@@ -41,174 +46,190 @@ msgstr "Suelta medios aquí"
 msgid "or click to browse · several at once"
 msgstr "o haz clic para buscar · varios a la vez"
 
-#: src/inspector.rs:155 src/inspector.rs:341
+#: src/inspector.rs:251 src/inspector.rs:465
 msgid "Pause the preview"
 msgstr "Pausar la vista previa"
 
-#: src/inspector.rs:167 src/list.rs:71
+#: src/inspector.rs:263 src/library.rs:72 src/list.rs:71
 msgid "Monitor"
 msgstr "Monitor"
 
-#: src/inspector.rs:173
+#: src/inspector.rs:269
 msgid "X offset"
 msgstr "Desplazamiento X"
 
-#: src/inspector.rs:174
+#: src/inspector.rs:270
 msgid "Y offset"
 msgstr "Desplazamiento Y"
 
-#: src/inspector.rs:176
+#: src/inspector.rs:272
 msgid "Exact size"
 msgstr "Tamaño exacto"
 
-#: src/inspector.rs:177
+#: src/inspector.rs:273
 msgid "Width"
 msgstr "Ancho"
 
-#: src/inspector.rs:178
+#: src/inspector.rs:274
 msgid "Height"
 msgstr "Alto"
 
-#: src/inspector.rs:180
+#: src/inspector.rs:276
 msgid "Speed"
 msgstr "Velocidad"
 
-#: src/inspector.rs:183
+#: src/inspector.rs:279
 msgid "Above everything"
 msgstr "Sobre todo"
 
-#: src/inspector.rs:183
+#: src/inspector.rs:279
 msgid "Above windows"
 msgstr "Sobre las ventanas"
 
-#: src/inspector.rs:183
+#: src/inspector.rs:279
 msgid "Below windows"
 msgstr "Bajo las ventanas"
 
-#: src/inspector.rs:183
+#: src/inspector.rs:279
 msgid "Desktop background"
 msgstr "Fondo del escritorio"
 
-#: src/inspector.rs:182
+#: src/inspector.rs:278
 msgid "Layer"
 msgstr "Capa"
 
-#: src/inspector.rs:185
+#: src/inspector.rs:281
 msgid "Loop"
 msgstr "Repetir"
 
-#: src/inspector.rs:187
+#: src/inspector.rs:283
 msgid "Visible"
 msgstr "Visible"
 
-#: src/inspector.rs:188
+#: src/inspector.rs:284
 msgid "Playing"
 msgstr "Reproduciendo"
 
-#: src/inspector.rs:189
+#: src/inspector.rs:285
 msgid "Limit frame rate"
 msgstr "Limitar fotogramas"
 
-#: src/inspector.rs:190
+#: src/inspector.rs:286
 msgid "Frames per second"
 msgstr "Fotogramas por segundo"
 
-#: src/inspector.rs:191
+#: src/inspector.rs:287
 msgid "Automatic"
 msgstr "Automática"
 
-#: src/inspector.rs:191
+#: src/inspector.rs:287
 msgid "Hardware"
 msgstr "Hardware"
 
-#: src/inspector.rs:191
+#: src/inspector.rs:287
 msgid "Software"
 msgstr "Software"
 
-#: src/inspector.rs:191
+#: src/inspector.rs:287
 msgid "Decoding"
 msgstr "Decodificación"
 
-#: src/inspector.rs:192
+#: src/inspector.rs:288
 msgid "Optimized copy"
 msgstr "Copia optimizada"
 
-#: src/inspector.rs:193
+#: src/inspector.rs:289
 msgid "Overflow"
 msgstr "Sobreposición"
 
-#: src/inspector.rs:202
+#: src/inspector.rs:292
+msgid "Flip horizontally"
+msgstr "Voltear horizontalmente"
+
+#: src/inspector.rs:296
+msgid "Flip vertically"
+msgstr "Voltear verticalmente"
+
+#: src/inspector.rs:301
+msgid "Rotate left"
+msgstr "Girar a la izquierda"
+
+#: src/inspector.rs:305
+msgid "Rotate right"
+msgstr "Girar a la derecha"
+
+#: src/inspector.rs:315
 msgid "Top left"
 msgstr "Arriba a la izquierda"
 
-#: src/inspector.rs:203
+#: src/inspector.rs:316
 msgid "Top"
 msgstr "Arriba"
 
-#: src/inspector.rs:204
+#: src/inspector.rs:317
 msgid "Top right"
 msgstr "Arriba a la derecha"
 
-#: src/inspector.rs:205
+#: src/inspector.rs:318
 msgid "Left"
 msgstr "Izquierda"
 
-#: src/inspector.rs:206
+#: src/inspector.rs:319
 msgid "Center"
 msgstr "Centro"
 
-#: src/inspector.rs:207
+#: src/inspector.rs:320
 msgid "Right"
 msgstr "Derecha"
 
-#: src/inspector.rs:208
+#: src/inspector.rs:321
 msgid "Bottom left"
 msgstr "Abajo a la izquierda"
 
-#: src/inspector.rs:209
+#: src/inspector.rs:322
 msgid "Bottom"
 msgstr "Abajo"
 
-#: src/inspector.rs:210
+#: src/inspector.rs:323
 msgid "Bottom right"
 msgstr "Abajo a la derecha"
 
-#: src/inspector.rs:217
+#: src/inspector.rs:330
 msgid "Choose another file…"
 msgstr "Elegir otro archivo…"
 
-#: src/inspector.rs:220
+#: src/inspector.rs:333
 msgid "Choose another file"
 msgstr "Elegir otro archivo"
 
-#: src/inspector.rs:239
+#: src/inspector.rs:352
 msgid "Anchor"
 msgstr "Ancla"
 
-#: src/inspector.rs:244 src/map.rs:534
+#: src/inspector.rs:357 src/map.rs:534
 msgid "Scale"
 msgstr "Escala"
 
-#: src/inspector.rs:247
+#: src/inspector.rs:360
 msgid "Opacity"
 msgstr "Opacidad"
 
-#: src/inspector.rs:248
+#: src/inspector.rs:361
 msgid "No audio"
 msgstr "Sin audio"
 
-#: src/inspector.rs:248
+#: src/inspector.rs:361
 msgid "Volume"
 msgstr "Volumen"
 
-#: src/inspector.rs:268
+#: src/inspector.rs:381
 msgid ""
 "Above everything also covers fullscreen apps; Above windows stays under them."
 msgstr ""
 "Sobre todo también cubre las apps a pantalla completa; Sobre las ventanas "
 "queda debajo de ellas."
 
-#: src/inspector.rs:270
+#: src/inspector.rs:383
 msgid ""
 "Lets up to half of the overlay go past the monitor edges, to hide "
 "transparent margins. Off brings it back inside."
@@ -216,78 +237,115 @@ msgstr ""
 "Permite que hasta la mitad del objeto salga del borde del monitor, para "
 "ocultar márgenes transparentes. Al desactivarla vuelve dentro."
 
-#: src/inspector.rs:274
+#: src/inspector.rs:387
 msgid "Placement"
 msgstr "Posición"
 
-#: src/inspector.rs:276
+#: src/inspector.rs:391
+msgid "Flip"
+msgstr "Volteo"
+
+#: src/inspector.rs:397
+msgid "Rotation"
+msgstr "Rotación"
+
+#: src/inspector.rs:400
 msgid "Size and look"
 msgstr "Tamaño y aspecto"
 
-#: src/inspector.rs:278
+#: src/inspector.rs:402
 msgid "Playback"
 msgstr "Reproducción"
 
-#: src/inspector.rs:280
+#: src/inspector.rs:404
 msgid "Performance"
 msgstr "Rendimiento"
 
-#: src/inspector.rs:341
+#: src/inspector.rs:465
 msgid "Play the preview"
 msgstr "Reproducir la vista previa"
 
-#: src/inspector.rs:464
+#: src/inspector.rs:612
 msgid "Add media to get started"
 msgstr "Añade medios para empezar"
 
-#: src/inspector.rs:464
+#: src/inspector.rs:612
 msgid "Select an overlay"
 msgstr "Selecciona un overlay"
 
-#: src/inspector.rs:466
+#: src/inspector.rs:614
 msgid "Drop videos, GIFs or images on the list, or use Add in the header bar."
 msgstr ""
 "Suelta vídeos, GIF o imágenes en la lista, o usa Añadir en la barra superior."
 
-#: src/inspector.rs:468
+#: src/inspector.rs:616
 msgid "Pick one in the list or on the map."
 msgstr "Elige uno en la lista o en el mapa."
 
-#: src/inspector.rs:498
+#: src/inspector.rs:646
 msgid "size unknown"
 msgstr "tamaño desconocido"
 
-#: src/inspector.rs:502
+#: src/inspector.rs:653
 msgid "animation"
 msgstr "animación"
 
-#: src/inspector.rs:503
+#: src/inspector.rs:654
 msgid "still image"
 msgstr "imagen fija"
 
-#: src/inspector.rs:507
+#: src/inspector.rs:658
 #, rust-format
 msgid "{} dropped frame"
 msgid_plural "{} dropped frames"
 msgstr[0] "{} fotograma perdido"
 msgstr[1] "{} fotogramas perdidos"
 
-#: src/inspector.rs:545
+#: src/inspector.rs:700
 msgid "Building the optimized copy"
 msgstr "Creando la copia optimizada"
 
-#: src/inspector.rs:546
+#: src/inspector.rs:701
 msgid "Optimized copy ready"
 msgstr "Copia optimizada lista"
 
-#: src/inspector.rs:548
+#: src/inspector.rs:703
 #, rust-format
 msgid "Failed: {}"
 msgstr "Error: {}"
 
-#: src/inspector.rs:548
+#: src/inspector.rs:703
 msgid "unknown error"
 msgstr "error desconocido"
+
+#: src/library.rs:70
+msgid "Scene"
+msgstr "Escena"
+
+#: src/library.rs:74 src/window.rs:240
+msgid "Add"
+msgstr "Añadir"
+
+#: src/library.rs:309
+msgid "Refresh library"
+msgstr "Actualizar biblioteca"
+
+#: src/library.rs:312 src/window.rs:174
+msgid "Library"
+msgstr "Biblioteca"
+
+#: src/library.rs:323
+msgid "Choose a folder to browse media"
+msgstr "Elige una carpeta para explorar contenido"
+
+#: src/library.rs:324
+msgid "Choose a folder"
+msgstr "Elegir una carpeta"
+
+#: src/library.rs:374
+#, rust-format
+msgid "{} items"
+msgstr "{} elementos"
 
 #: src/list.rs:56
 #, rust-format
@@ -302,7 +360,7 @@ msgstr "Desaparece de la pantalla y de esta escena. El archivo no se borra."
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/list.rs:59 src/prefs.rs:325
+#: src/list.rs:59 src/prefs.rs:225 src/prefs.rs:395
 msgid "Remove"
 msgstr "Quitar"
 
@@ -375,55 +433,55 @@ msgstr "Sin overlays en {}"
 msgid "Drop media anywhere in the window"
 msgstr "Suelta medios en cualquier parte de la ventana"
 
-#: src/prefs.rs:54 src/window.rs:66 src/window.rs:235
+#: src/prefs.rs:57 src/window.rs:66 src/window.rs:266
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: src/prefs.rs:61
+#: src/prefs.rs:64
 msgid "Language"
 msgstr "Idioma"
 
-#: src/prefs.rs:61
+#: src/prefs.rs:64
 msgid "System default"
 msgstr "El del sistema"
 
-#: src/prefs.rs:62
+#: src/prefs.rs:65
 msgid "Show in the panel tray"
 msgstr "Mostrar en la bandeja del panel"
 
-#: src/prefs.rs:63
+#: src/prefs.rs:66
 msgid "Start at login"
 msgstr "Iniciar al arrancar la sesión"
 
-#: src/prefs.rs:65
+#: src/prefs.rs:68
 msgid "Hardware decoding"
 msgstr "Decodificación por hardware"
 
-#: src/prefs.rs:66
+#: src/prefs.rs:69
 msgid "Automatic (safe)"
 msgstr "Automática (segura)"
 
-#: src/prefs.rs:66
+#: src/prefs.rs:69
 msgid "Off"
 msgstr "Desactivada"
 
-#: src/prefs.rs:66
+#: src/prefs.rs:69
 msgid "Other…"
 msgstr "Otra…"
 
-#: src/prefs.rs:68
+#: src/prefs.rs:71
 msgid "Decoder name (mpv hwdec value)"
 msgstr "Nombre del decodificador (valor hwdec de mpv)"
 
-#: src/prefs.rs:69
+#: src/prefs.rs:72
 msgid "Minimum video height for hardware decoding"
 msgstr "Altura mínima de vídeo para decodificar por hardware"
 
-#: src/prefs.rs:71
+#: src/prefs.rs:74
 msgid "Hide for apps"
 msgstr "Ocultar con apps"
 
-#: src/prefs.rs:72
+#: src/prefs.rs:75
 msgid ""
 "Overlays on a monitor hide while a window of one of these classes is focused "
 "there."
@@ -431,90 +489,98 @@ msgstr ""
 "Los overlays de un monitor se ocultan mientras una ventana de una de estas "
 "clases tiene el foco en él."
 
-#: src/prefs.rs:75
+#: src/prefs.rs:78
 msgid "Allow optimized copies"
 msgstr "Permitir copias optimizadas"
 
-#: src/prefs.rs:76
+#: src/prefs.rs:79
 msgid "Copy format"
 msgstr "Formato de las copias"
 
-#: src/prefs.rs:76
+#: src/prefs.rs:79
 msgid "Uncompressed if it fits"
 msgstr "Sin comprimir si caben"
 
-#: src/prefs.rs:76
+#: src/prefs.rs:79
 msgid "Always compressed"
 msgstr "Siempre comprimidas"
 
-#: src/prefs.rs:77
+#: src/prefs.rs:80
 msgid "Largest uncompressed copy per file (MB)"
 msgstr "Mayor copia sin comprimir por archivo (MB)"
 
-#: src/prefs.rs:78
+#: src/prefs.rs:81
 msgid "Cache size (MB)"
 msgstr "Tamaño de la caché (MB)"
 
-#: src/prefs.rs:90
+#: src/prefs.rs:83
+msgid "Library folders"
+msgstr "Carpetas de la biblioteca"
+
+#: src/prefs.rs:84
+msgid "Folders scanned for media in the Library view."
+msgstr "Carpetas que se exploran en la vista Biblioteca."
+
+#: src/prefs.rs:100
 msgid "System"
 msgstr "Sistema"
 
-#: src/prefs.rs:91
+#: src/prefs.rs:101
 msgid "Graphite coral"
 msgstr "Grafito coral"
 
-#: src/prefs.rs:92
+#: src/prefs.rs:102
 msgid "Graphite amber"
 msgstr "Grafito ámbar"
 
-#: src/prefs.rs:93
+#: src/prefs.rs:103
 msgid "Midnight violet"
 msgstr "Medianoche violeta"
 
-#: src/prefs.rs:94
+#: src/prefs.rs:104
 msgid "Midnight mint"
 msgstr "Medianoche menta"
 
-#: src/prefs.rs:95
+#: src/prefs.rs:105
 msgid "Midnight white"
 msgstr "Medianoche blanco"
 
-#: src/prefs.rs:96
+#: src/prefs.rs:106
 msgid "Paper coral"
 msgstr "Papel coral"
 
-#: src/prefs.rs:97
+#: src/prefs.rs:107
 msgid "Paper blue"
 msgstr "Papel azul"
 
-#: src/prefs.rs:132
+#: src/prefs.rs:142
 msgid "Appearance"
 msgstr "Apariencia"
 
-#: src/prefs.rs:135
+#: src/prefs.rs:145
 msgid "Takes effect when the editor restarts."
 msgstr "Se aplica al reiniciar el editor."
 
-#: src/prefs.rs:144
+#: src/prefs.rs:154
 msgid ""
 "An icon that shows AniWay runs in the background, with pause, hide and quit."
 msgstr ""
 "Un icono que indica que AniWay funciona en segundo plano, con pausar, "
 "ocultar y salir."
 
-#: src/prefs.rs:145
+#: src/prefs.rs:155
 msgid "General"
 msgstr "General"
 
-#: src/prefs.rs:147
+#: src/prefs.rs:157
 msgid "Video decoding"
 msgstr "Decodificación de vídeo"
 
-#: src/prefs.rs:151
+#: src/prefs.rs:161
 msgid "Add a window class"
 msgstr "Añadir una clase de ventana"
 
-#: src/prefs.rs:164
+#: src/prefs.rs:174
 msgid ""
 "Optimized copies of media drawn much smaller. Uncompressed copies cost disk "
 "space instead of CPU."
@@ -522,23 +588,27 @@ msgstr ""
 "Copias optimizadas de los medios dibujados mucho más pequeños. Las copias "
 "sin comprimir cuestan espacio en disco en lugar de CPU."
 
-#: src/prefs.rs:167
+#: src/prefs.rs:177
 msgid "Optimized copies"
 msgstr "Copias optimizadas"
 
-#: src/prefs.rs:213
+#: src/prefs.rs:192
+msgid "Add folder"
+msgstr "Añadir carpeta"
+
+#: src/prefs.rs:283
 msgid "The new language shows after a restart"
 msgstr "El nuevo idioma se verá tras reiniciar"
 
-#: src/prefs.rs:213
+#: src/prefs.rs:283
 msgid "Restart"
 msgstr "Reiniciar"
 
-#: src/prefs.rs:277
+#: src/prefs.rs:347
 msgid "Starts the daemon with your graphical session."
 msgstr "Inicia el demonio con tu sesión gráfica."
 
-#: src/prefs.rs:285
+#: src/prefs.rs:355
 msgid ""
 "This session does not start graphical-session.target: add aniwayd to your "
 "compositor config instead."
@@ -546,7 +616,7 @@ msgstr ""
 "Esta sesión no inicia graphical-session.target: añade aniwayd a la "
 "configuración de tu compositor."
 
-#: src/prefs.rs:327
+#: src/prefs.rs:397
 #, rust-format
 msgid "Remove {}"
 msgstr "Quitar {}"
@@ -582,7 +652,7 @@ msgstr "Ninguno"
 msgid "Press the keys…"
 msgstr "Pulsa las teclas…"
 
-#: src/scenes.rs:229 src/window.rs:65 src/window.rs:215
+#: src/scenes.rs:229 src/window.rs:65 src/window.rs:246
 msgid "New scene"
 msgstr "Nueva escena"
 
@@ -677,7 +747,7 @@ msgstr "Mostrar el monitor 1 a 9"
 msgid "Remove the selected overlay (asks first)"
 msgstr "Quitar el overlay seleccionado (pide confirmación)"
 
-#: src/window.rs:67 src/window.rs:236
+#: src/window.rs:67 src/window.rs:267
 msgid "Keyboard shortcuts"
 msgstr "Atajos de teclado"
 
@@ -731,77 +801,73 @@ msgstr "sin imán"
 msgid "next overlay"
 msgstr "siguiente overlay"
 
-#: src/window.rs:179
-msgid "Connection to AniWay lost. Reconnecting…"
-msgstr "Conexión con AniWay perdida. Reconectando…"
+#: src/window.rs:173
+msgid "Map"
+msgstr "Mapa"
 
-#: src/window.rs:186
+#: src/window.rs:211
 msgid "Start"
 msgstr "Iniciar"
 
-#: src/window.rs:193
+#: src/window.rs:218
 msgid "AniWay is not running"
 msgstr "AniWay no está en ejecución"
 
-#: src/window.rs:194
+#: src/window.rs:219
 msgid "The daemon draws the overlays; this editor only controls it."
 msgstr "El demonio dibuja los overlays; este editor solo lo controla."
 
-#: src/window.rs:209
-msgid "Add"
-msgstr "Añadir"
-
-#: src/window.rs:213
+#: src/window.rs:244
 msgid "Add media (several at once)"
 msgstr "Añadir medios (varios a la vez)"
 
-#: src/window.rs:219
+#: src/window.rs:250
 msgid "New empty scene; the current one stays as it is"
 msgstr "Nueva escena vacía; la actual se queda como está"
 
-#: src/window.rs:222 src/window.rs:224 src/window.rs:225
+#: src/window.rs:253 src/window.rs:255 src/window.rs:256
 #: ../aniwayd/src/tray.rs:98
 msgid "Pause all"
 msgstr "Pausar todo"
 
-#: src/window.rs:228
+#: src/window.rs:259
 msgid "Hide until shown"
 msgstr "Ocultar hasta mostrar"
 
-#: src/window.rs:228
+#: src/window.rs:259
 msgid "Hide for 15 minutes"
 msgstr "Ocultar 15 minutos"
 
-#: src/window.rs:228
+#: src/window.rs:259
 msgid "Hide for 1 hour"
 msgstr "Ocultar 1 hora"
 
-#: src/window.rs:232
+#: src/window.rs:263
 msgid "Hide 15 min"
 msgstr "Ocultar 15 min"
 
-#: src/window.rs:237
+#: src/window.rs:268
 msgid "About AniWay"
 msgstr "Acerca de AniWay"
 
-#: src/window.rs:239
+#: src/window.rs:270
 msgid "Main menu"
 msgstr "Menú principal"
 
-#: src/window.rs:250
+#: src/window.rs:281
 msgid "Overlay list"
 msgstr "Lista de overlays"
 
-#: src/window.rs:254
+#: src/window.rs:285
 msgid "Inspector"
 msgstr "Inspector"
 
-#: src/window.rs:388
+#: src/window.rs:419
 #, rust-format
 msgid "Show ({} min left)"
 msgstr "Mostrar (quedan {} min)"
 
-#: src/window.rs:388
+#: src/window.rs:419
 msgid "Show"
 msgstr "Mostrar"
 

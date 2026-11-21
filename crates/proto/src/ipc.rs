@@ -11,6 +11,8 @@ pub enum Request {
     State,
     Add {
         overlay: OverlayPatch,
+        #[serde(default)]
+        scene: Option<String>,
     },
     /// `transient` applies the change live without saving the scene.
     Set {
@@ -180,7 +182,10 @@ mod tests {
     fn request_round_trip() {
         let reqs = [
             Request::State,
-            Request::Add { overlay: OverlayPatch { path: Some("a.gif".into()), x: Some(3), ..Default::default() } },
+            Request::Add {
+                overlay: OverlayPatch { path: Some("a.gif".into()), x: Some(3), ..Default::default() },
+                scene: None,
+            },
             Request::Set {
                 id: "a".into(),
                 patch: OverlayPatch { opacity: Some(0.5), ..Default::default() },

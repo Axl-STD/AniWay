@@ -161,9 +161,36 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
 
     let centre = gtk::Box::new(gtk::Orientation::Vertical, 0);
     map.set_vexpand(true);
-    centre.append(&map);
-    centre.append(&hint_bar());
+    let map_page = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    map_page.append(&map);
+    map_page.append(&hint_bar());
+    let library = crate::library::Library::new(ctl.clone());
+    let mode_pages = gtk::Stack::new();
+    mode_pages.add_named(&map_page, Some("map"));
+    mode_pages.add_named(&library.widget, Some("library"));
+    mode_pages.set_vexpand(true);
+    let mode = adw::ToggleGroup::builder().halign(gtk::Align::Center).margin_top(6).margin_bottom(4).build();
+    let map_button = adw::Toggle::builder().label(tr("Map")).name("map").build();
+    let library_button = adw::Toggle::builder().label(tr("Library")).name("library").build();
+    mode.add(map_button);
+    mode.add(library_button);
+    centre.append(&mode);
+    centre.append(&mode_pages);
     centre.add_css_class("centre");
+    mode.connect_active_notify(glib::clone!(
+        #[weak]
+        mode_pages,
+        #[strong]
+        library,
+        move |group| {
+            if group.active_name().as_deref() == Some("library") {
+                mode_pages.set_visible_child_name("library");
+                library.refresh();
+            } else {
+                mode_pages.set_visible_child_name("map");
+            }
+        }
+    ));
     let inner = adw::OverlaySplitView::builder()
         .content(&centre)
         .sidebar(&inspector.widget)
@@ -176,9 +203,7 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
     let outer = adw::OverlaySplitView::builder().content(&inner).sidebar(&list.widget).build();
     outer.set_min_sidebar_width(260.0);
     outer.set_max_sidebar_width(320.0);
-    let lost = adw::Banner::builder().title(tr("Connection to AniWay lost. Reconnecting…")).build();
     let main = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    main.append(&lost);
     main.append(&outer);
     outer.set_vexpand(true);
 
@@ -223,7 +248,7 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
         .child(&scene_child)
         .action_name("win.new-scene")
         .tooltip_text(tr("New empty scene; the current one stays as it is"))
-        .css_classes(["flat"])
+        .css_classes(["secondary-action"])
         .build();
     let (pause_child, pause_label) = icon_label("media-playback-pause-symbolic", &tr("Pause all"));
     let pause =
@@ -447,21 +472,23 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
     });
 
     let events = client::subscribe();
+    let app = app.clone();
     glib::spawn_future_local(async move {
         while let Ok(event) = events.recv().await {
-            header.set_sensitive(event.is_some());
             match event {
-                Some(state) => {
-                    lost.set_revealed(false);
+                client::Event::State(state) => {
+                    header.set_sensitive(true);
                     outer.set_sensitive(true);
                     pages.set_visible_child_name("main");
-                    ctl.set_state(Some(state));
+                    ctl.set_state(Some(*state));
                 }
-                None if ctl.state.borrow().is_some() => {
-                    lost.set_revealed(true);
+                client::Event::Down => {
+                    header.set_sensitive(false);
                     outer.set_sensitive(false);
+                    ctl.set_state(None);
+                    pages.set_visible_child_name("down");
                 }
-                None => pages.set_visible_child_name("down"),
+                client::Event::Quit => app.quit(),
             }
         }
     });

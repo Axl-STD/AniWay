@@ -24,6 +24,7 @@ impl App {
         match request {
             Request::State => return Ok(serde_json::to_value(self.state())?),
             Request::Quit => {
+                self.broadcast_quit();
                 self.stop.stop();
                 self.stop.wakeup();
             }
@@ -77,9 +78,17 @@ impl App {
             Request::Resume { id: None } => self.paused_all = false,
             Request::TogglePause { id: None } => self.paused_all = !self.paused_all,
             Request::Hide { for_secs: Some(_), .. } => bail!("--for applies to the global hide, not to one overlay"),
-            Request::Add { overlay } => {
+            Request::Add { overlay, scene } => {
+                overlay.validate().map_err(|e| anyhow!(e))?;
                 let path = overlay.path.clone().ok_or_else(|| anyhow!("path is required"))?;
                 check_path(&path)?;
+                let target_name = scene.as_deref().unwrap_or(&self.config.scene);
+                valid_scene(target_name)?;
+                let mut target = if target_name == self.config.scene {
+                    self.scene.clone()
+                } else {
+                    self.store.load_scene(target_name, true)?.ok_or_else(|| anyhow!("unknown scene '{target_name}'"))?
+                };
                 let mut ov = Overlay::default();
                 let id = overlay.id.clone();
                 overlay.apply(&mut ov);
@@ -87,15 +96,18 @@ impl App {
                     ov.output = self.default_output();
                 }
                 ov.id = match id {
-                    Some(id) if self.scene.find(&id).is_some() => {
-                        bail!("overlay '{id}' already exists")
-                    }
+                    Some(id) if target.find(&id).is_some() => bail!("overlay '{id}' already exists"),
                     Some(id) if !id.is_empty() => id,
-                    _ => self.scene.unique_id(&file_stem(&ov.path)),
+                    _ => target.unique_id(&file_stem(&ov.path)),
                 };
                 let id = ov.id.clone();
-                self.mutate(|scene| scene.overlays.push(ov))?;
-                self.reconcile();
+                if target_name == self.config.scene {
+                    self.mutate(|scene| scene.overlays.push(ov))?;
+                    self.reconcile();
+                } else {
+                    target.overlays.push(ov);
+                    self.store.save_scene(target_name, &target)?;
+                }
                 return Ok(json!(id));
             }
             Request::Remove { id } => {
@@ -103,6 +115,7 @@ impl App {
                 self.mutate(|scene| scene.overlays.retain(|o| o.id != id))?;
             }
             Request::Set { id, patch, transient } => {
+                patch.validate().map_err(|e| anyhow!(e))?;
                 self.overlay(&id)?;
                 if let Some(path) = &patch.path {
                     check_path(path)?;

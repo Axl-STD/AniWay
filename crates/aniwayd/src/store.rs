@@ -52,6 +52,16 @@ impl Store {
         let path = paths::scene_file(name);
         let mut scene: Option<Scene> = self.read_changed(&path, force)?.map(|text| parse(&path, &text)).transpose()?;
         if let Some(s) = &mut scene {
+            for overlay in &s.overlays {
+                if !matches!(overlay.rotation, 0 | 90 | 180 | 270) {
+                    bail!(
+                        "{}: overlay '{}' has invalid rotation {}; expected 0, 90, 180 or 270",
+                        path.display(),
+                        overlay.id,
+                        overlay.rotation
+                    );
+                }
+            }
             s.normalize();
         }
         Ok(scene)

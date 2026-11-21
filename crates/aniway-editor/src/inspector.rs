@@ -6,11 +6,12 @@ use crate::map::file_name;
 use crate::media::{self, Media, PREVIEW_FPS};
 use crate::{ngettext, tr};
 use adw::prelude::*;
-use aniway_proto::geometry::{offset_for, place, Point, Size};
+use adw::subclass::prelude::*;
+use aniway_proto::geometry::{offset_for, place, rotated_size, Point, Size};
 use aniway_proto::ipc::{OverlayInfo, ProxyState, Request, StateData};
 use aniway_proto::model::{Anchor, Decode, Layer, Overlay, OverlayPatch};
 use aniway_proto::paths;
-use gtk::glib;
+use gtk::{gdk, glib, graphene, gsk};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Duration;
@@ -22,11 +23,100 @@ const ANCHORS: [Anchor; 9] = {
 const LAYERS: [Layer; 4] = [Layer::Overlay, Layer::Top, Layer::Bottom, Layer::Background];
 const DECODE: [Decode; 3] = [Decode::Auto, Decode::Hardware, Decode::Software];
 
+mod preview {
+    use super::*;
+
+    mod imp {
+        use super::*;
+
+        #[derive(Default)]
+        pub struct Preview {
+            pub texture: RefCell<Option<gdk::Texture>>,
+            pub rotation: Cell<u16>,
+            pub flip_h: Cell<bool>,
+            pub flip_v: Cell<bool>,
+        }
+
+        #[glib::object_subclass]
+        impl ObjectSubclass for Preview {
+            const NAME: &'static str = "OwInspectorPreview";
+            type Type = super::Preview;
+            type ParentType = gtk::Widget;
+        }
+
+        impl ObjectImpl for Preview {}
+
+        impl WidgetImpl for Preview {
+            fn measure(&self, orientation: gtk::Orientation, _for_size: i32) -> (i32, i32, i32, i32) {
+                if orientation == gtk::Orientation::Vertical {
+                    (170, 170, -1, -1)
+                } else {
+                    (0, 0, -1, -1)
+                }
+            }
+
+            fn snapshot(&self, snapshot: &gtk::Snapshot) {
+                self.obj().draw(snapshot);
+            }
+        }
+    }
+
+    glib::wrapper! {
+        pub struct Preview(ObjectSubclass<imp::Preview>) @extends gtk::Widget, @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget;
+    }
+
+    impl Preview {
+        pub fn new() -> Self {
+            glib::Object::new()
+        }
+
+        pub fn set_texture(&self, texture: Option<&gdk::Texture>) {
+            self.imp().texture.replace(texture.cloned());
+            self.queue_draw();
+        }
+
+        pub fn set_transform(&self, rotation: u16, flip_h: bool, flip_v: bool) {
+            self.imp().rotation.set(rotation);
+            self.imp().flip_h.set(flip_h);
+            self.imp().flip_v.set(flip_v);
+            self.queue_draw();
+        }
+
+        fn draw(&self, snapshot: &gtk::Snapshot) {
+            let Some(texture) = self.imp().texture.borrow().as_ref().cloned() else { return };
+            let (w, h) = (self.width() as f32, self.height() as f32);
+            if w <= 0.0 || h <= 0.0 {
+                return;
+            }
+            let rotation = self.imp().rotation.get();
+            let (tw, th) = (texture.width() as f32, texture.height() as f32);
+            let (rw, rh) = if matches!(rotation, 90 | 270) { (th, tw) } else { (tw, th) };
+            let scale = (w / rw).min(h / rh);
+            let (rw, rh) = (rw * scale, rh * scale);
+            let centre = graphene::Point::new(w / 2.0, h / 2.0);
+            let (sw, sh) = if matches!(rotation, 90 | 270) { (rh, rw) } else { (rw, rh) };
+            let texture_rect = graphene::Rect::new(centre.x() - sw / 2.0, centre.y() - sh / 2.0, sw, sh);
+            snapshot.save();
+            snapshot.translate(&centre);
+            snapshot.scale(
+                if self.imp().flip_h.get() { -1.0 } else { 1.0 },
+                if self.imp().flip_v.get() { -1.0 } else { 1.0 },
+            );
+            if rotation != 0 {
+                snapshot.rotate(f32::from(rotation));
+            }
+            snapshot.translate(&graphene::Point::new(-centre.x(), -centre.y()));
+            snapshot.append_scaled_texture(&texture, gsk::ScalingFilter::Linear, &texture_rect);
+            snapshot.restore();
+        }
+    }
+}
+
 pub struct Inspector {
     pub widget: gtk::Stack,
     ctl: Rc<Ctl>,
     updating: Cell<bool>,
-    preview: gtk::Picture,
+    preview: preview::Preview,
     preview_toggle: gtk::Button,
     /// File shown by the preview; empty until the probe said whether it moves.
     preview_path: RefCell<String>,
@@ -61,6 +151,11 @@ pub struct Inspector {
     decode: adw::ComboRow,
     optimize: adw::SwitchRow,
     overflow: adw::SwitchRow,
+    flip_h: gtk::ToggleButton,
+    flip_v: gtk::ToggleButton,
+    rotation: gtk::Label,
+    rotate_left: gtk::Button,
+    rotate_right: gtk::Button,
 }
 
 pub fn spin(title: &str, min: f64, max: f64, step: f64, digits: u32) -> adw::SpinRow {
@@ -92,6 +187,7 @@ fn fit_scale(state: &StateData, ov: &OverlayInfo, media: Option<Size>) -> f64 {
     let output = state.outputs.iter().find(|o| Some(o.name.as_str()) == name).or(state.outputs.first());
     match (output, media) {
         (Some(o), Some(m)) if m.w > 0 && m.h > 0 => {
+            let m = rotated_size(m, ov.config.rotation);
             (f64::from(o.rect.w) / f64::from(m.w)).min(f64::from(o.rect.h) / f64::from(m.h))
         }
         _ => 4.0,
@@ -137,16 +233,16 @@ fn text(css: &str) -> gtk::Label {
 
 impl Inspector {
     pub fn new(ctl: Rc<Ctl>) -> Rc<Self> {
+        let preview = preview::Preview::new();
+        preview.set_hexpand(true);
+        preview.set_height_request(170);
+        preview.add_css_class("preview");
+        preview.set_overflow(gtk::Overflow::Hidden);
         let this = Rc::new(Self {
             widget: gtk::Stack::new(),
             ctl,
             updating: Cell::default(),
-            preview: gtk::Picture::builder()
-                .content_fit(gtk::ContentFit::Contain)
-                .height_request(170)
-                .css_classes(["preview"])
-                .overflow(gtk::Overflow::Hidden)
-                .build(),
+            preview,
             preview_toggle: gtk::Button::builder()
                 .icon_name("media-playback-pause-symbolic")
                 .halign(gtk::Align::End)
@@ -191,6 +287,23 @@ impl Inspector {
             decode: combo("Decoding", &[&tr("Automatic"), &tr("Hardware"), &tr("Software")]),
             optimize: switch("Optimized copy"),
             overflow: switch("Overflow"),
+            flip_h: gtk::ToggleButton::builder()
+                .icon_name("object-flip-horizontal-symbolic")
+                .tooltip_text(tr("Flip horizontally"))
+                .build(),
+            flip_v: gtk::ToggleButton::builder()
+                .icon_name("object-flip-vertical-symbolic")
+                .tooltip_text(tr("Flip vertically"))
+                .build(),
+            rotation: gtk::Label::builder().width_chars(4).xalign(1.0).build(),
+            rotate_left: gtk::Button::builder()
+                .icon_name("object-rotate-left-symbolic")
+                .tooltip_text(tr("Rotate left"))
+                .build(),
+            rotate_right: gtk::Button::builder()
+                .icon_name("object-rotate-right-symbolic")
+                .tooltip_text(tr("Rotate right"))
+                .build(),
         });
         this.build();
         this.wire();
@@ -255,7 +368,7 @@ impl Inspector {
             .margin_start(16)
             .margin_end(16)
             .build();
-        let preview = gtk::Overlay::builder().child(&self.preview).build();
+        let preview = gtk::Overlay::builder().child(&self.preview).height_request(170).build();
         preview.add_overlay(&self.preview_toggle);
         let header = gtk::Box::new(gtk::Orientation::Vertical, 3);
         header.append(&preview);
@@ -272,7 +385,18 @@ impl Inspector {
         ));
         let place = [w(&self.output), w(&anchor), w(&self.x), w(&self.y), w(&self.overflow)];
         page.append(&group("Placement", "aniway-placement-symbolic", &place.iter().collect::<Vec<_>>()));
-        let look = [w(&scale), w(&self.exact), w(&opacity), w(&self.speed)];
+        let flip = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+        flip.append(&self.flip_h);
+        flip.append(&self.flip_v);
+        let flip_row = adw::ActionRow::builder().title(tr("Flip")).build();
+        flip_row.add_suffix(&flip);
+        let rotation = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+        rotation.append(&self.rotate_left);
+        rotation.append(&self.rotation);
+        rotation.append(&self.rotate_right);
+        let rotation_row = adw::ActionRow::builder().title(tr("Rotation")).build();
+        rotation_row.add_suffix(&rotation);
+        let look = [w(&scale), w(&self.exact), w(&opacity), w(&self.speed), w(&flip_row), w(&rotation_row)];
         page.append(&group("Size and look", "aniway-size-symbolic", &look.iter().collect::<Vec<_>>()));
         let playback = [w(&self.layer), w(&self.looping), w(&volume), w(&self.visible), w(&self.playing)];
         page.append(&group("Playback", "media-playback-start-symbolic", &playback.iter().collect::<Vec<_>>()));
@@ -296,7 +420,7 @@ impl Inspector {
         }
         *self.preview_path.borrow_mut() = path.to_string();
         *self.preview_frames.borrow_mut() = Rc::default();
-        self.preview.set_paintable(media.and_then(|m| m.1.texture.as_ref()));
+        self.preview.set_texture(media.and_then(|m| m.1.texture.as_ref()));
         let moving = media.is_some_and(|(p, m)| m.moving() && !paths::is_url(p));
         self.preview_toggle.set_visible(false);
         self.preview_on.set(self.preview.settings().is_gtk_enable_animations());
@@ -304,7 +428,7 @@ impl Inspector {
         if moving {
             let (this, path) = (Rc::downgrade(self), path.to_string());
             glib::spawn_future_local(async move {
-                let frames = media::preview_frames(path.clone()).await;
+                let frames = media::preview_frames(path.clone(), 320).await;
                 let Some(this) = this.upgrade().filter(|t| *t.preview_path.borrow() == path) else { return };
                 this.preview_toggle.set_visible(frames.len() > 1);
                 *this.preview_frames.borrow_mut() = Rc::new(frames);
@@ -321,10 +445,10 @@ impl Inspector {
         let running = self.preview_timer.borrow().is_some();
         match (play, running) {
             (true, false) => {
-                let (picture, mut i) = (self.preview.clone(), 0);
+                let (preview, mut i) = (self.preview.clone(), 0);
                 let id = glib::timeout_add_local(Duration::from_millis(1000 / u64::from(PREVIEW_FPS)), move || {
                     i = (i + 1) % frames.len();
-                    picture.set_paintable(Some(&frames[i]));
+                    preview.set_texture(Some(&frames[i]));
                     glib::ControlFlow::Continue
                 });
                 *self.preview_timer.borrow_mut() = Some(id);
@@ -433,6 +557,8 @@ impl Inspector {
         on!(optimize, connect_active_notify, |t, r, p| p.optimize = Some(r.is_active()));
         on!(width, connect_value_notify, |t, r, p| p.width = Some(r.value() as u32));
         on!(height, connect_value_notify, |t, r, p| p.height = Some(r.value() as u32));
+        on!(flip_h, connect_toggled, |t, r, p| p.flip_h = Some(r.is_active()));
+        on!(flip_v, connect_toggled, |t, r, p| p.flip_v = Some(r.is_active()));
         on!(fps_value, connect_value_notify, |t, r, p| p.max_fps =
             t.fps.enables_expansion().then_some(r.value() as u32));
         on!(fps, connect_enable_expansion_notify, |t, r, p| p.max_fps =
@@ -449,6 +575,22 @@ impl Inspector {
                     this.edit(|p| p.anchor = Some(anchor));
                 }
             });
+        }
+        for (button, step) in [(&self.rotate_left, 270u16), (&self.rotate_right, 90)] {
+            button.connect_clicked(glib::clone!(
+                #[weak(rename_to = this)]
+                self,
+                move |_| {
+                    // The view includes the unconfirmed edit, so quick clicks keep adding up.
+                    let id = this.ctl.selected.borrow().clone();
+                    let current = this
+                        .ctl
+                        .view()
+                        .and_then(|s| s.overlays.into_iter().find(|o| Some(&o.config.id) == id.as_ref()))
+                        .map_or(0, |o| o.config.rotation);
+                    this.edit(|p| p.rotation = Some((current + step) % 360));
+                },
+            ));
         }
     }
 
@@ -495,7 +637,10 @@ impl Inspector {
         self.subtitle.set_text(&c.path);
         let media = self.ctl.media.borrow().get(&c.path).cloned().unwrap_or_default();
         let size = ov.media.or(media.size);
-        let mut details = vec![size.map_or(tr("size unknown"), |m| format!("{}×{}", m.w, m.h))];
+        let mut details = vec![size.map_or(tr("size unknown"), |m| {
+            let m = rotated_size(m, c.rotation);
+            format!("{}×{}", m.w, m.h)
+        })];
         details.extend(media.codec.clone());
         details.push(match (media.duration.is_some(), media.moving()) {
             (true, _) => media.duration_text(),
@@ -524,6 +669,10 @@ impl Inspector {
         self.x.set_value(f64::from(c.x));
         self.y.set_value(f64::from(c.y));
         self.overflow.set_active(c.overflow);
+        self.flip_h.set_active(c.flip_h);
+        self.flip_v.set_active(c.flip_v);
+        self.rotation.set_text(&format!("{}°", c.rotation));
+        self.preview.set_transform(c.rotation, c.flip_h, c.flip_v);
         self.set_scale_range(fit_scale(state, ov, size));
         self.scale.set_value(c.scale.max(MIN_SCALE).ln());
         let size = ov.rect.unwrap_or_default();

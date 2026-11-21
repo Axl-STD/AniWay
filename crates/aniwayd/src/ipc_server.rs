@@ -83,6 +83,11 @@ impl App {
             sent
         });
     }
+
+    pub(crate) fn broadcast_quit(&mut self) {
+        let line = b"{\"event\":\"quit\"}\n";
+        self.subscribers.retain_mut(|stream| stream.write_all(line).and_then(|_| stream.flush()).is_ok());
+    }
 }
 
 const MAX_LINE: usize = 1 << 20;

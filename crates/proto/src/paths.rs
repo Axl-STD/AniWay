@@ -71,6 +71,14 @@ pub fn extension(path: &str) -> String {
     name.rsplit_once('.').map_or(String::new(), |(_, e)| e.to_ascii_lowercase())
 }
 
+pub const IMAGE_EXTENSIONS: &[&str] = &["gif", "png", "apng", "webp", "jpg", "jpeg", "bmp"];
+pub const VIDEO_EXTENSIONS: &[&str] =
+    &["3gp", "avi", "flv", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "ogv", "ts", "webm", "wmv"];
+
+pub fn is_media_extension(ext: &str) -> bool {
+    IMAGE_EXTENSIONS.contains(&ext) || VIDEO_EXTENSIONS.contains(&ext)
+}
+
 /// Expands a leading `~` or `~/` to the home directory.
 pub fn expand_tilde(path: &str) -> PathBuf {
     match path.strip_prefix('~') {
@@ -110,5 +118,14 @@ mod tests {
         assert_eq!(extension("/a.b/noext"), "");
         assert!(is_url("https://a/b.gif"));
         assert!(!is_url("/tmp/a://b"));
+    }
+
+    #[test]
+    fn media_extensions_match_daemon_inputs() {
+        for ext in IMAGE_EXTENSIONS.iter().chain(VIDEO_EXTENSIONS) {
+            assert!(is_media_extension(ext));
+        }
+        assert!(is_media_extension("MP4".to_ascii_lowercase().as_str()));
+        assert!(!is_media_extension("txt"));
     }
 }

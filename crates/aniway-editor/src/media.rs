@@ -60,20 +60,19 @@ fn probe(path: &str) -> Media {
 pub const PREVIEW_FPS: u32 = 12;
 /// Seconds of media the preview loops over, and its longest side in pixels.
 const PREVIEW_SECS: u32 = 4;
-const PREVIEW_SIDE: u32 = 320;
 
 /// Cache key of a file: its path, modification time and size.
-fn key(path: &str) -> Option<String> {
+fn key(path: &str, side: u32) -> Option<String> {
     let meta = std::fs::metadata(path).ok()?;
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
-    (path, meta.modified().ok(), meta.len()).hash(&mut hasher);
+    (path, side, meta.modified().ok(), meta.len()).hash(&mut hasher);
     Some(format!("{:016x}", hasher.finish()))
 }
 
 /// Thumbnail PNG of `path` in the disk cache; built with ffmpeg when missing.
 fn thumbnail(path: &str, duration: Option<f64>) -> Option<PathBuf> {
     let dir = cache_dir().join("thumbs");
-    let file = dir.join(format!("{}.png", key(path)?));
+    let file = dir.join(format!("{}.png", key(path, 256)?));
     if file.exists() {
         return Some(file);
     }
@@ -89,17 +88,16 @@ fn thumbnail(path: &str, duration: Option<f64>) -> Option<PathBuf> {
 
 /// Directory of small PNG frames of the first seconds of `path`, cached on disk; built with ffmpeg when missing.
 /// The frames are written to a temporary directory that is renamed when complete.
-fn preview_dir(path: &str) -> Option<PathBuf> {
-    let dir = cache_dir().join("previews").join(key(path)?);
+fn preview_dir(path: &str, side: u32) -> Option<PathBuf> {
+    let dir = cache_dir().join("previews").join(key(path, side)?);
     if dir.is_dir() {
         return Some(dir);
     }
     let tmp = dir.with_extension("tmp");
     let _ = std::fs::remove_dir_all(&tmp);
     std::fs::create_dir_all(&tmp).ok()?;
-    let fit = format!(
-        "fps={PREVIEW_FPS},scale={PREVIEW_SIDE}:{PREVIEW_SIDE}:force_original_aspect_ratio=decrease:force_divisible_by=2"
-    );
+    let fit =
+        format!("fps={PREVIEW_FPS},scale={side}:{side}:force_original_aspect_ratio=decrease:force_divisible_by=2");
     let (secs, frames) = (PREVIEW_SECS.to_string(), (PREVIEW_FPS * PREVIEW_SECS).to_string());
     let out = tmp.join("%03d.png");
     let args = ["-v", "quiet", "-t", &secs, "-i", path, "-vf", &fit, "-frames:v", &frames, out.to_str()?];
@@ -109,9 +107,9 @@ fn preview_dir(path: &str) -> Option<PathBuf> {
 }
 
 /// Frames of the animated preview of `path`; empty when ffmpeg cannot make them.
-pub async fn preview_frames(path: String) -> Vec<gdk::Texture> {
+pub async fn preview_frames(path: String, side: u32) -> Vec<gdk::Texture> {
     gio::spawn_blocking(move || {
-        let Some(dir) = preview_dir(&path) else { return Vec::new() };
+        let Some(dir) = preview_dir(&path, side) else { return Vec::new() };
         let mut files: Vec<PathBuf> =
             std::fs::read_dir(dir).into_iter().flatten().flatten().map(|e| e.path()).collect();
         files.sort();

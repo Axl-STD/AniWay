@@ -680,10 +680,23 @@ impl MonitorMap {
             shadow();
         }
         s.push_rounded_clip(&shape);
-        match texture {
-            Some(texture) => s.append_scaled_texture(texture, gsk::ScalingFilter::Linear, r),
-            None => s.append_color(&gdk::RGBA::new(0.5, 0.5, 0.55, 0.35), r),
+        s.save();
+        s.translate(&centre);
+        s.scale(if ov.config.flip_h { -1.0 } else { 1.0 }, if ov.config.flip_v { -1.0 } else { 1.0 });
+        if ov.config.rotation != 0 {
+            s.rotate(f32::from(ov.config.rotation));
         }
+        s.translate(&graphene::Point::new(-centre.x(), -centre.y()));
+        let texture_size =
+            if matches!(ov.config.rotation, 90 | 270) { (r.height(), r.width()) } else { (r.width(), r.height()) };
+        let texture_rect =
+            rect(centre.x() - texture_size.0 / 2.0, centre.y() - texture_size.1 / 2.0, texture_size.0, texture_size.1);
+        match texture {
+            Some(texture) => s.append_scaled_texture(texture, gsk::ScalingFilter::Linear, &texture_rect),
+            None => s.append_color(&gdk::RGBA::new(0.5, 0.5, 0.55, 0.35), &texture_rect),
+        }
+        s.restore();
+        s.pop();
         // The number chip clears the rounded corner and shrinks on tiny stickers; a dark halo keeps it readable
         // on any picture.
         let small = r.width() < 64.0 || r.height() < 40.0;
@@ -712,7 +725,6 @@ impl MonitorMap {
                 (false, r.x() + r.width() - x - 6.0),
             );
         }
-        s.pop();
         let width = 4.0 + 2.0 * peel;
         if hidden {
             let path = gsk::PathBuilder::new();

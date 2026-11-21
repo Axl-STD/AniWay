@@ -21,6 +21,15 @@ pub struct Rect {
     pub h: u32,
 }
 
+/// Swaps the displayed dimensions for quarter-turn rotations.
+pub fn rotated_size(size: Size, rotation: u16) -> Size {
+    if matches!(rotation, 90 | 270) {
+        Size { w: size.h, h: size.w }
+    } else {
+        size
+    }
+}
+
 /// Position of the anchor inside a box of `size`, relative to its top-left corner.
 pub fn anchor_point(size: Size, anchor: Anchor) -> Point {
     use Anchor::*;
@@ -45,7 +54,7 @@ fn scaled(media: Size, factor: f64) -> (f64, f64) {
 /// Overlay size in logical pixels: explicit width/height (aspect preserved, fit inside when both),
 /// else `media * scale`; then shrunk uniformly to fit the output.
 pub fn overlay_size(output: Size, media: Size, ov: &Overlay) -> Size {
-    let media = Size { w: media.w.max(1), h: media.h.max(1) };
+    let media = rotated_size(Size { w: media.w.max(1), h: media.h.max(1) }, ov.rotation);
     let factor = match (ov.width, ov.height) {
         (Some(w), Some(h)) => (w as f64 / media.w as f64).min(h as f64 / media.h as f64),
         (Some(w), None) => w as f64 / media.w as f64,
@@ -99,10 +108,18 @@ mod tests {
 
     const OUT: Size = Size { w: 1000, h: 600 };
     const MEDIA: Size = Size { w: 200, h: 100 };
+
     const ALL: [Anchor; 9] = {
         use Anchor::*;
         [TopLeft, Top, TopRight, Left, Center, Right, BottomLeft, Bottom, BottomRight]
     };
+
+    #[test]
+    fn rotated_size_swaps_quarter_turns() {
+        assert_eq!(rotated_size(MEDIA, 0), MEDIA);
+        assert_eq!(rotated_size(MEDIA, 90), Size { w: 100, h: 200 });
+        assert_eq!(rotated_size(MEDIA, 270), Size { w: 100, h: 200 });
+    }
 
     fn ov(anchor: Anchor, x: i32, y: i32) -> Overlay {
         Overlay { anchor, x, y, ..Overlay::default() }

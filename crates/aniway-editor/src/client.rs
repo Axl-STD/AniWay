@@ -42,23 +42,38 @@ pub async fn call(req: Request) -> anyhow::Result<Value> {
     gio::spawn_blocking(move || request(&req)).await.map_err(|_| anyhow::anyhow!("request thread panicked"))?
 }
 
-/// Streams `Some(state)` for every daemon event and `None` whenever the connection is down; reconnects forever.
-pub fn subscribe() -> async_channel::Receiver<Option<StateData>> {
+/// Events from the daemon subscription: state updates, connection loss, or a clean daemon quit.
+pub enum Event {
+    State(Box<StateData>),
+    Down,
+    Quit,
+}
+
+/// Streams daemon events and reconnects forever after a dropped connection.
+pub fn subscribe() -> async_channel::Receiver<Event> {
     let (tx, rx) = async_channel::unbounded();
     std::thread::spawn(move || loop {
         if let Ok((reader, response)) = connect(&Request::Subscribe) {
             if response.ok {
                 for line in reader.lines().map_while(Result::ok) {
-                    let state = serde_json::from_str::<Value>(&line)
-                        .ok()
-                        .and_then(|v| serde_json::from_value::<StateData>(v.get("data")?.clone()).ok());
-                    if state.is_some_and(|s| tx.send_blocking(Some(s)).is_err()) {
-                        return;
+                    let Ok(v) = serde_json::from_str::<Value>(&line) else { continue };
+                    let event = match v.get("event").and_then(Value::as_str) {
+                        Some("quit") => Some(Event::Quit),
+                        Some("state") => serde_json::from_value::<StateData>(v["data"].clone())
+                            .ok()
+                            .map(|state| Event::State(Box::new(state))),
+                        _ => None,
+                    };
+                    if let Some(event) = event {
+                        let quit = matches!(event, Event::Quit);
+                        if tx.send_blocking(event).is_err() || quit {
+                            return;
+                        }
                     }
                 }
             }
         }
-        if tx.send_blocking(None).is_err() {
+        if tx.send_blocking(Event::Down).is_err() {
             return;
         }
         std::thread::sleep(RETRY);
@@ -266,21 +281,29 @@ impl Ctl {
     pub fn add_paths(self: &Rc<Self>, paths: Vec<String>) {
         for (i, path) in paths.into_iter().enumerate() {
             let offset = 40 + 24 * i as i32;
-            let overlay = OverlayPatch {
-                path: Some(path),
-                output: self.focus.borrow().clone(),
-                x: Some(offset),
-                y: Some(offset),
-                ..Default::default()
-            };
-            let ctl = self.clone();
-            glib::spawn_future_local(async move {
-                match call(Request::Add { overlay }).await {
-                    Ok(id) => ctl.select(id.as_str().map(String::from)),
-                    Err(e) => ctl.toast(&e.to_string()),
-                }
-            });
+            self.add_with(path, self.focus.borrow().clone(), None, offset);
         }
+    }
+
+    fn add_with(self: &Rc<Self>, path: String, output: Option<String>, scene: Option<String>, offset: i32) {
+        let overlay = OverlayPatch { path: Some(path), output, x: Some(offset), y: Some(offset), ..Default::default() };
+        let ctl = self.clone();
+        glib::spawn_future_local(async move {
+            match call(Request::Add { overlay, scene: scene.clone() }).await {
+                Ok(id) => {
+                    if scene.as_deref() == ctl.state.borrow().as_ref().map(|s| s.scene.as_str()) {
+                        ctl.select(id.as_str().map(String::from));
+                    } else if let Some(scene) = scene {
+                        ctl.toast(&tr("Added to {}").replace("{}", &scene));
+                    }
+                }
+                Err(e) => ctl.toast(&e.to_string()),
+            }
+        });
+    }
+
+    pub fn add_library(self: &Rc<Self>, path: String, scene: String, output: Option<String>) {
+        self.add_with(path, output, Some(scene), 40);
     }
 
     pub fn add_files(self: &Rc<Self>, files: &gdk::FileList) {
@@ -294,7 +317,7 @@ impl Ctl {
         let ctl = self.clone();
         toast.connect_button_clicked(move |_| {
             if let Ok(patch) = serde_json::to_value(&overlay).and_then(serde_json::from_value) {
-                ctl.send(Request::Add { overlay: patch });
+                ctl.send(Request::Add { overlay: patch, scene: None });
             }
         });
         self.toasts.add_toast(toast);

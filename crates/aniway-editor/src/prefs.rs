@@ -42,6 +42,8 @@ pub struct Prefs {
     format: adw::ComboRow,
     raw_mb: adw::SpinRow,
     cache_mb: adw::SpinRow,
+    library: adw::PreferencesGroup,
+    library_rows: RefCell<Vec<adw::ActionRow>>,
 }
 
 fn entry(title: &str) -> adw::EntryRow {
@@ -76,6 +78,11 @@ impl Prefs {
             format: combo(&tr("Copy format"), &[&tr("Uncompressed if it fits"), &tr("Always compressed")]),
             raw_mb: spin(&tr("Largest uncompressed copy per file (MB)"), 1.0, 65536.0, 64.0, 0),
             cache_mb: spin(&tr("Cache size (MB)"), 1.0, 1048576.0, 256.0, 0),
+            library: adw::PreferencesGroup::builder()
+                .title(tr("Library folders"))
+                .description(tr("Folders scanned for media in the Library view."))
+                .build(),
+            library_rows: RefCell::default(),
         });
         this.build();
         this.wire();
@@ -127,7 +134,7 @@ impl Prefs {
         cards
     }
 
-    fn build(&self) {
+    fn build(self: &Rc<Self>) {
         let page = adw::PreferencesPage::new();
         let appearance = adw::PreferencesGroup::builder().title(tr("Appearance")).build();
         appearance.add(&self.build_themes());
@@ -173,7 +180,62 @@ impl Prefs {
                 self.cache_mb.upcast_ref(),
             ],
         );
+        self.build_library();
+        page.add(&self.library);
         self.dialog.add(&page);
+    }
+
+    fn build_library(self: &Rc<Self>) {
+        let add = adw::ActionRow::builder().title(tr("Add folder")).activatable(true).build();
+        add.add_suffix(&gtk::Image::from_icon_name("list-add-symbolic"));
+        let this = Rc::downgrade(self);
+        add.connect_activated(move |_| {
+            let Some(this) = this.upgrade() else { return };
+            let dialog = gtk::FileDialog::new();
+            dialog.select_folder(None::<&gtk::Window>, gio::Cancellable::NONE, move |r| {
+                if let Ok(folder) = r {
+                    if let Some(path) = folder.path() {
+                        if let Err(error) = settings::add_library_folder(&path) {
+                            this.ctl.toast(&error.to_string());
+                        } else {
+                            this.settings.replace(settings::load());
+                            this.rebuild_library();
+                        }
+                    }
+                }
+            });
+        });
+        self.library.add(&add);
+        self.rebuild_library();
+    }
+
+    fn rebuild_library(self: &Rc<Self>) {
+        self.library_rows.borrow_mut().drain(..).for_each(|row| self.library.remove(&row));
+        let folders = settings::library_folders();
+        for path in folders {
+            let text = path.to_string_lossy().into_owned();
+            let row = adw::ActionRow::builder().title(&text).build();
+            let remove = gtk::Button::builder()
+                .icon_name("edit-delete-symbolic")
+                .css_classes(["flat"])
+                .tooltip_text(tr("Remove"))
+                .build();
+            let this = Rc::downgrade(self);
+            let path = path.clone();
+            remove.connect_clicked(move |_| {
+                if let Some(this) = this.upgrade() {
+                    if let Err(error) = settings::remove_library_folder(&path) {
+                        this.ctl.toast(&error.to_string());
+                    } else {
+                        this.settings.replace(settings::load());
+                        this.rebuild_library();
+                    }
+                }
+            });
+            row.add_suffix(&remove);
+            self.library.add(&row);
+            self.library_rows.borrow_mut().push(row);
+        }
     }
 
     fn save_settings(&self) {

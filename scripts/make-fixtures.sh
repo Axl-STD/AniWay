@@ -17,6 +17,11 @@ disc() { # width height fps duration
 "${ff[@]}" -f lavfi -i "color=black:s=320x320,format=rgba,geq=r='255*lt(mod(X,2),1)':g='255*lt(mod(X,2),1)':b='255*lt(mod(X,2),1)':a=255" \
   -frames:v 1 "$out/stripes320.png"
 
+# Four opaque asymmetric quadrants used to prove rotation and mirror direction.
+quad="color=c=black:s=200x100,drawbox=x=0:y=0:w=100:h=50:c=red:t=fill,drawbox=x=100:y=0:w=100:h=50:c=green:t=fill,drawbox=x=0:y=50:w=100:h=50:c=yellow:t=fill,drawbox=x=100:y=50:w=100:h=50:c=magenta:t=fill"
+"${ff[@]}" -f lavfi -i "$quad" -frames:v 1 "$out/asymmetric.png"
+"${ff[@]}" -f lavfi -i "$quad" -frames:v 1 -loop 0 "$out/asymmetric.gif"
+
 # Same stripes at 400 px: shown at 320 logical px on a 1.25 output it maps 1:1 to physical pixels.
 "${ff[@]}" -f lavfi -i "color=black:s=400x400,format=rgba,geq=r='255*lt(mod(X,2),1)':g='255*lt(mod(X,2),1)':b='255*lt(mod(X,2),1)':a=255" \
   -frames:v 1 "$out/stripes400.png"

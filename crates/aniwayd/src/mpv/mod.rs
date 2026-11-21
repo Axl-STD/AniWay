@@ -23,8 +23,6 @@ const CHEAP_RENDER: [(&str, &str); 9] = [
     ("hdr-compute-peak", "no"),
 ];
 
-const IMAGE_EXTENSIONS: [&str; 7] = ["gif", "png", "apng", "webp", "jpg", "jpeg", "bmp"];
-
 pub enum Event {
     Size(Size),
     Loaded,
@@ -50,6 +48,7 @@ pub struct Player {
     pub hwdec_eligible: bool,
     /// True once hardware decoding (and its interop contexts) has been enabled.
     pub hwdec_on: bool,
+    mirror_y: bool,
     _wake: Box<Wake>,
 }
 
@@ -60,6 +59,10 @@ fn cstr(s: &str) -> CString {
 fn error_text(code: c_int) -> String {
     // SAFETY: mpv_error_string returns a static NUL-terminated string.
     unsafe { CStr::from_ptr(mpv_error_string(code)) }.to_string_lossy().into_owned()
+}
+
+fn video_rotate(ov: &Overlay) -> u16 {
+    (ov.rotation + if ov.flip_h { 180 } else { 0 }) % 360
 }
 
 /// What a player loads and what is known about it.
@@ -91,7 +94,7 @@ impl Player {
             bail!("mpv_create failed");
         }
         let ext = paths::extension(&source.path);
-        let image = IMAGE_EXTENSIONS.contains(&ext.as_str());
+        let image = paths::IMAGE_EXTENSIONS.contains(&ext.as_str());
         // The native VP9 decoder drops the alpha plane of WebM files, so those use libvpx.
         let alpha_container = matches!(ext.as_str(), "webm" | "mkv");
         let video = !image && !alpha_container;
@@ -103,6 +106,7 @@ impl Player {
             hwdec_eligible: eligible,
             hwdec_on: eligible && (ov.decode == Decode::Hardware || source.known_big),
             _wake: Box::new(Wake { tx, key }),
+            mirror_y: ov.flip_h != ov.flip_v,
         };
         let audio = if ov.volume == 0 { ("aid", "no".to_string()) } else { ("volume", ov.volume.to_string()) };
         let options = [
@@ -123,6 +127,7 @@ impl Player {
             ("demuxer-max-bytes", demuxer_bytes(raw_copy).into()),
             ("demuxer-max-back-bytes", "1MiB".into()),
             ("loop-file", loop_value(ov.looping).into()),
+            ("video-rotate", video_rotate(ov).to_string()),
             ("speed", ov.speed.to_string()),
             ("pause", yes_no(paused).into()),
             audio,
@@ -154,6 +159,11 @@ impl Player {
         player.create_render_context(vaapi_display(hwdec, wl_display))?;
         player.load(&source.path)?;
         Ok(player)
+    }
+
+    pub fn set_transform(&mut self, ov: &Overlay) {
+        self.property("video-rotate", &video_rotate(ov).to_string());
+        self.mirror_y = ov.flip_h != ov.flip_v;
     }
 
     fn create_render_context(&mut self, wl_display: *mut c_void) -> Result<()> {
@@ -322,7 +332,7 @@ impl Player {
     /// Renders the current frame into the bound framebuffer 0.
     pub fn render(&self, w: u32, h: u32) {
         let mut fbo = mpv_opengl_fbo { fbo: 0, w: w as c_int, h: h as c_int, internal_format: 0 };
-        let mut flip_y: c_int = 1;
+        let mut flip_y: c_int = if self.mirror_y { 0 } else { 1 };
         let mut block: c_int = 0;
         let mut params = [
             mpv_render_param { kind: RP_BLOCK_FOR_TARGET_TIME, data: &mut block as *mut _ as *mut c_void },

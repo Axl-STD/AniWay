@@ -222,6 +222,9 @@ button.dropzone:hover { background: alpha(var(--accent-bg-color), 0.1); }
 button.dropzone.active { border-style: solid; border-color: var(--accent-bg-color); background: alpha(var(--accent-bg-color), 0.18); }
 .dropzone .title { font-weight: 700; font-size: 14px; }
 .dropzone .caption { color: var(--mute); }
+.secondary-action { background: alpha(var(--secondary-action-bg-color), 0.28); color: var(--secondary-action-fg-color); border-radius: 9px; }
+.secondary-action:hover { background: alpha(var(--secondary-action-bg-color), 0.42); }
+.secondary-action:active { background: alpha(var(--secondary-action-bg-color), 0.55); }
 .hintbar { padding: 6px 16px 14px; color: var(--mute); font-size: 12px; }
 .keycap { font-size: 11px; font-weight: 600; padding: 0 6px; min-width: 12px; border-radius: 6px;
   border: 1px solid alpha(currentColor, 0.3); border-bottom-width: 2px; background: alpha(currentColor, 0.06); }
@@ -295,6 +298,8 @@ fn variables(t: &Theme) -> String {
         ("warning-fg", "rgba(0, 0, 0, 0.8)".into()),
         ("warning", warning.into()),
         ("shade", shade.into()),
+        ("secondary-action-bg", css(VINYL[5])),
+        ("secondary-action-fg", css(VINYL_INK)),
     ];
     let mut out = String::from(":root {");
     for (name, value) in &colours {

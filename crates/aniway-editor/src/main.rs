@@ -1,6 +1,7 @@
 mod client;
 mod dropzone;
 mod inspector;
+mod library;
 mod list;
 mod map;
 mod media;

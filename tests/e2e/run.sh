@@ -70,6 +70,33 @@ c3() {
   local st
   st=$($PIX stripes "$(snap sharp $MAIN 1)" 100 100 320 320)
   assert "1-pixel stripes keep full contrast ($st)" '[ "$(awk -v r="$(kv "$st" ratio)" "BEGIN { print (r >= 0.95) }")" = 1 ]'
+  for mode in none rotate flip_h flip_v both; do
+    local opts="" want="tl=red tr=green bl=yellow br=magenta"
+    case "$mode" in
+      rotate) opts="--rotate 90"; want="tl=yellow tr=red bl=magenta br=green" ;;
+      flip_h) opts="--flip-h true"; want="tl=green tr=red bl=magenta br=yellow" ;;
+      flip_v) opts="--flip-v true"; want="tl=yellow tr=magenta bl=red br=green" ;;
+      both) opts="--flip-h true --flip-v true"; want="tl=magenta tr=yellow bl=green br=red" ;;
+    esac
+    "$OW" add "$FIX/asymmetric.png" --id "q-$mode" --pos 100,100 $opts >/dev/null
+    shown "q-$mode"
+    local qshot qcolors
+    qshot=$(snap "q-$mode" "$MAIN" 1)
+    qcolors=$($PIX quad "$qshot" 100 100 "$(jo "q-$mode" .rect.w)" "$(jo "q-$mode" .rect.h)")
+    assert "asymmetric still $mode colors ($qcolors)" '[ "$qcolors" = "$want" ]'
+    if [ "$mode" = rotate ]; then
+      assert "asymmetric still rotation swaps size" '[ "$(jo "q-$mode" .rect | jq -r ".w,.h" | paste -sd x)" = 100x200 ]'
+    fi
+    "$OW" remove "q-$mode" >/dev/null
+  done
+  "$OW" add "$FIX/asymmetric.gif" --id q-gif --pos 100,100 --rotate 90 >/dev/null
+  shown q-gif
+  local gifshot gifcolors
+  gifshot=$(snap q-gif "$MAIN" 1)
+  gifcolors=$($PIX quad "$gifshot" 100 100 "$(jo q-gif .rect.w)" "$(jo q-gif .rect.h)")
+  assert "asymmetric GIF rotation colors ($gifcolors)" '[ "$gifcolors" = "tl=yellow tr=red bl=magenta br=green" ]'
+  assert "asymmetric GIF rotation swaps size" '[ "$(jo q-gif .rect | jq -r ".w,.h" | paste -sd x)" = 100x200 ]'
+  "$OW" remove q-gif >/dev/null
 }
 
 c4() {
@@ -126,8 +153,15 @@ c6() {
   assert "hand edit reloads live" 'wait_until 4 "[ \"\$(jo p1 .x)\" = 77 ]"'
   local sum
   sum=$(md5sum <"$scene")
+  cp "$scene" "$T/valid.toml"
   sleep 1.5
   assert "no write loop after the reload" '[ "$(md5sum <"$scene")" = "$sum" ] && [ "$(grep -c reloaded "$T/daemon.log")" = $((reloads + 1)) ]'
+  sed 's/^rotation = 0$/rotation = 45/' "$scene" >"$T/invalid.toml" && mv "$T/invalid.toml" "$scene"
+  "$OW" reload >/dev/null
+  assert "invalid scene rotation is rejected and previous state stays" 'sleep 1; [ "$(jo p1 .x)" = 77 ] && grep -q "invalid rotation 45" "$T/daemon.log"'
+  cp "$T/valid.toml" "$scene"
+  "$OW" reload >/dev/null
+  sleep 1.5
   printf '[[overlay\nid = ' >"$T/broken.toml" && mv "$T/broken.toml" "$scene"
   sleep 1.5
   assert "broken TOML keeps previous state" '[ "$(jo p1 .x)" = 77 ] && [ "$(jo p1 .shown)" = true ]'
@@ -373,6 +407,31 @@ c15() {
   assert "after a restart the WebM copy is found before playing (its alpha is probed)" 'wait_until 10 "grep -q \"overlay .web. plays its optimized copy\" \"\$T/daemon.log\""'
 }
 
+c16() {
+  fresh
+  local events="$T/quit-events"
+  python3 -I "$ROOT/tests/e2e/ipc.py" subscribe 3 >"$events" &
+  local sub=$!
+  sleep 0.3
+  python3 -I "$ROOT/tests/e2e/ipc.py" request '{"cmd":"quit"}' >/dev/null
+  wait "$sub"
+  assert "subscriber receives quit before daemon exits" 'grep -q '"'"'"event":"quit"'"'"' "$events" && wait_until 10 "! pgrep -x aniwayd >/dev/null"'
+}
+
+c17() {
+  fresh
+  local active=$XDG_CONFIG_HOME/aniway/scenes/default.toml
+  "$OW" add "$FIX/anim.gif" --id live --pos 10,10 >/dev/null
+  cp "$active" "$T/active.before"
+  "$OW" scene save other >/dev/null
+  "$OW" add "$FIX/anim.gif" --id other-id --scene other --pos 20,20 >/dev/null
+  assert "add to another scene leaves active state unchanged" 'cmp -s "$active" "$T/active.before"'
+  assert "add to another scene persists its overlay" 'grep -q "id = \"other-id\"" "$XDG_CONFIG_HOME/aniway/scenes/other.toml"'
+  "$OW" add "$FIX/anim.gif" --id live-2 --scene default >/dev/null
+  assert "explicit active scene add behaves normally" 'grep -q "id = \"live-2\"" "$active"'
+  assert "unknown scene is rejected" '! "$OW" add "$FIX/anim.gif" --scene missing >/dev/null 2>&1'
+}
+
 cleanup() {
   daemon_stop 2>/dev/null
   pkill -x mpv 2>/dev/null
@@ -388,10 +447,11 @@ declare -A DESC=(
   [4]="HEVC 4K 60 s loop with hwdec; CPU/RSS" [5]="click-through" [6]="live edits persist; hot reload; broken TOML"
   [7]="fullscreen per monitor and hide_for_classes" [8]="hide --for" [9]="output hotplug" [10]="fractional scale 1.25"
   [11]="anchors after a resolution change" [12]="rotated monitor" [13]="15 small videos, hwdec switch, leaks"
-  [14]="subscribe, transient set" [15]="optimized copies"
+  [14]="subscribe, transient set" [15]="optimized copies" [16]="subscriber receives quit event"
+  [17]="add to named scene"
 )
 selected=("$@")
-[ ${#selected[@]} -eq 0 ] && selected=(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)
+[ ${#selected[@]} -eq 0 ] && selected=(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17)
 
 for n in "${selected[@]}"; do
   if [ "$n" != 1 ] && [ -z "${HPID:-}" ]; then
