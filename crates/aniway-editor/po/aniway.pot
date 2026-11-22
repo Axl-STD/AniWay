@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aniway\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 15:38-0600\n"
+"POT-Creation-Date: 2026-11-21 22:12-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "Pause the preview"
 msgstr ""
 
-#: src/inspector.rs:263 src/library.rs:72 src/list.rs:71
+#: src/inspector.rs:263 src/library.rs:72 src/list.rs:73
 msgid "Monitor"
 msgstr ""
 
@@ -267,55 +267,55 @@ msgstr ""
 msgid "Play the preview"
 msgstr ""
 
-#: src/inspector.rs:612
+#: src/inspector.rs:623
 msgid "Add media to get started"
 msgstr ""
 
-#: src/inspector.rs:612
+#: src/inspector.rs:623
 msgid "Select an overlay"
 msgstr ""
 
-#: src/inspector.rs:614
+#: src/inspector.rs:625
 msgid "Drop videos, GIFs or images on the list, or use Add in the header bar."
 msgstr ""
 
-#: src/inspector.rs:616
+#: src/inspector.rs:627
 msgid "Pick one in the list or on the map."
 msgstr ""
 
-#: src/inspector.rs:646
+#: src/inspector.rs:657
 msgid "size unknown"
 msgstr ""
 
-#: src/inspector.rs:653
+#: src/inspector.rs:664
 msgid "animation"
 msgstr ""
 
-#: src/inspector.rs:654
+#: src/inspector.rs:665
 msgid "still image"
 msgstr ""
 
-#: src/inspector.rs:658
+#: src/inspector.rs:669
 #, rust-format
 msgid "{} dropped frame"
 msgid_plural "{} dropped frames"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/inspector.rs:700
+#: src/inspector.rs:711
 msgid "Building the optimized copy"
 msgstr ""
 
-#: src/inspector.rs:701
+#: src/inspector.rs:712
 msgid "Optimized copy ready"
 msgstr ""
 
-#: src/inspector.rs:703
+#: src/inspector.rs:714
 #, rust-format
 msgid "Failed: {}"
 msgstr ""
 
-#: src/inspector.rs:703
+#: src/inspector.rs:714
 msgid "unknown error"
 msgstr ""
 
@@ -327,85 +327,101 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: src/library.rs:309
+#: src/library.rs:315
+msgid "Change folder"
+msgstr ""
+
+#: src/library.rs:317
 msgid "Refresh library"
 msgstr ""
 
-#: src/library.rs:312 src/window.rs:174
+#: src/library.rs:320 src/window.rs:174
 msgid "Library"
 msgstr ""
 
-#: src/library.rs:323
+#: src/library.rs:332
 msgid "Choose a folder to browse media"
 msgstr ""
 
-#: src/library.rs:324
+#: src/library.rs:333
 msgid "Choose a folder"
 msgstr ""
 
 #: src/library.rs:374
+msgid "No folder"
+msgstr ""
+
+#: src/library.rs:385
 #, rust-format
 msgid "{} items"
 msgstr ""
 
-#: src/list.rs:56
+#: src/list.rs:58
 #, rust-format
 msgid "Remove {}?"
 msgstr ""
 
-#: src/list.rs:57
+#: src/list.rs:59
 msgid "It leaves the screen and this scene. The file itself is kept."
 msgstr ""
 
-#: src/list.rs:59 src/scenes.rs:121 src/scenes.rs:273
+#: src/list.rs:61 src/scenes.rs:121 src/scenes.rs:273
 msgid "Cancel"
 msgstr ""
 
-#: src/list.rs:59 src/prefs.rs:225 src/prefs.rs:395
+#: src/list.rs:61 src/prefs.rs:221 src/prefs.rs:390
 msgid "Remove"
 msgstr ""
 
-#: src/list.rs:72
+#: src/list.rs:74
 msgid "Format"
 msgstr ""
 
-#: src/list.rs:73
+#: src/list.rs:75
 msgid "Length"
 msgstr ""
 
-#: src/list.rs:104
+#: src/list.rs:119
 msgid "Remove…"
 msgstr ""
 
-#: src/list.rs:120
+#: src/list.rs:136
 msgid "Monitor disconnected"
 msgstr ""
 
-#: src/list.rs:122
+#: src/list.rs:138
 msgid "Hidden"
 msgstr ""
 
-#: src/list.rs:124
+#: src/list.rs:140
 msgid "All overlays are hidden"
 msgstr ""
 
-#: src/list.rs:126
+#: src/list.rs:142
 msgid "Hidden by an app rule"
 msgstr ""
 
-#: src/list.rs:128
+#: src/list.rs:144
 msgid "All overlays are paused"
 msgstr ""
 
-#: src/list.rs:166
+#: src/list.rs:169
+msgid "Hide"
+msgstr ""
+
+#: src/list.rs:169 src/window.rs:429
+msgid "Show"
+msgstr ""
+
+#: src/list.rs:190
 msgid "Overlays"
 msgstr ""
 
-#: src/list.rs:236
+#: src/list.rs:260
 msgid "software decoding"
 msgstr ""
 
-#: src/list.rs:238
+#: src/list.rs:262
 #, rust-format
 msgid "{} overlay"
 msgid_plural "{} overlays"
@@ -434,182 +450,182 @@ msgstr ""
 msgid "Drop media anywhere in the window"
 msgstr ""
 
-#: src/prefs.rs:57 src/window.rs:66 src/window.rs:266
+#: src/prefs.rs:56 src/window.rs:66 src/window.rs:267
 msgid "Preferences"
 msgstr ""
 
-#: src/prefs.rs:64
+#: src/prefs.rs:63
 msgid "Language"
 msgstr ""
 
-#: src/prefs.rs:64
+#: src/prefs.rs:63
 msgid "System default"
 msgstr ""
 
-#: src/prefs.rs:65
+#: src/prefs.rs:64
 msgid "Show in the panel tray"
 msgstr ""
 
-#: src/prefs.rs:66
+#: src/prefs.rs:65
 msgid "Start at login"
 msgstr ""
 
-#: src/prefs.rs:68
+#: src/prefs.rs:67
 msgid "Hardware decoding"
 msgstr ""
 
-#: src/prefs.rs:69
+#: src/prefs.rs:68
 msgid "Automatic (safe)"
 msgstr ""
 
-#: src/prefs.rs:69
+#: src/prefs.rs:68
 msgid "Off"
 msgstr ""
 
-#: src/prefs.rs:69
+#: src/prefs.rs:68
 msgid "Other…"
 msgstr ""
 
-#: src/prefs.rs:71
+#: src/prefs.rs:70
 msgid "Decoder name (mpv hwdec value)"
 msgstr ""
 
-#: src/prefs.rs:72
+#: src/prefs.rs:71
 msgid "Minimum video height for hardware decoding"
 msgstr ""
 
-#: src/prefs.rs:74
+#: src/prefs.rs:73
 msgid "Hide for apps"
 msgstr ""
 
-#: src/prefs.rs:75
+#: src/prefs.rs:74
 msgid ""
 "Overlays on a monitor hide while a window of one of these classes is focused "
 "there."
 msgstr ""
 
-#: src/prefs.rs:78
+#: src/prefs.rs:77
 msgid "Allow optimized copies"
 msgstr ""
 
-#: src/prefs.rs:79
+#: src/prefs.rs:78
 msgid "Copy format"
 msgstr ""
 
-#: src/prefs.rs:79
+#: src/prefs.rs:78
 msgid "Uncompressed if it fits"
 msgstr ""
 
-#: src/prefs.rs:79
+#: src/prefs.rs:78
 msgid "Always compressed"
 msgstr ""
 
-#: src/prefs.rs:80
+#: src/prefs.rs:79
 msgid "Largest uncompressed copy per file (MB)"
 msgstr ""
 
-#: src/prefs.rs:81
+#: src/prefs.rs:80
 msgid "Cache size (MB)"
 msgstr ""
 
-#: src/prefs.rs:83
+#: src/prefs.rs:82
 msgid "Library folders"
 msgstr ""
 
-#: src/prefs.rs:84
+#: src/prefs.rs:83
 msgid "Folders scanned for media in the Library view."
 msgstr ""
 
-#: src/prefs.rs:100
+#: src/prefs.rs:97
 msgid "System"
 msgstr ""
 
-#: src/prefs.rs:101
+#: src/prefs.rs:98
 msgid "Graphite coral"
 msgstr ""
 
-#: src/prefs.rs:102
+#: src/prefs.rs:99
 msgid "Graphite amber"
 msgstr ""
 
-#: src/prefs.rs:103
+#: src/prefs.rs:100
 msgid "Midnight violet"
 msgstr ""
 
-#: src/prefs.rs:104
+#: src/prefs.rs:101
 msgid "Midnight mint"
 msgstr ""
 
-#: src/prefs.rs:105
+#: src/prefs.rs:102
 msgid "Midnight white"
 msgstr ""
 
-#: src/prefs.rs:106
+#: src/prefs.rs:103
 msgid "Paper coral"
 msgstr ""
 
-#: src/prefs.rs:107
+#: src/prefs.rs:104
 msgid "Paper blue"
 msgstr ""
 
-#: src/prefs.rs:142
+#: src/prefs.rs:139
 msgid "Appearance"
 msgstr ""
 
-#: src/prefs.rs:145
+#: src/prefs.rs:142
 msgid "Takes effect when the editor restarts."
 msgstr ""
 
-#: src/prefs.rs:154
+#: src/prefs.rs:151
 msgid ""
 "An icon that shows AniWay runs in the background, with pause, hide and quit."
 msgstr ""
 
-#: src/prefs.rs:155
+#: src/prefs.rs:152
 msgid "General"
 msgstr ""
 
-#: src/prefs.rs:157
+#: src/prefs.rs:154
 msgid "Video decoding"
 msgstr ""
 
-#: src/prefs.rs:161
+#: src/prefs.rs:158
 msgid "Add a window class"
 msgstr ""
 
-#: src/prefs.rs:174
+#: src/prefs.rs:171
 msgid ""
 "Optimized copies of media drawn much smaller. Uncompressed copies cost disk "
 "space instead of CPU."
 msgstr ""
 
-#: src/prefs.rs:177
+#: src/prefs.rs:174
 msgid "Optimized copies"
 msgstr ""
 
-#: src/prefs.rs:192
+#: src/prefs.rs:189
 msgid "Add folder"
 msgstr ""
 
-#: src/prefs.rs:283
+#: src/prefs.rs:275
 msgid "The new language shows after a restart"
 msgstr ""
 
-#: src/prefs.rs:283
+#: src/prefs.rs:275
 msgid "Restart"
 msgstr ""
 
-#: src/prefs.rs:347
+#: src/prefs.rs:339
 msgid "Starts the daemon with your graphical session."
 msgstr ""
 
-#: src/prefs.rs:355
+#: src/prefs.rs:347
 msgid ""
 "This session does not start graphical-session.target: add aniwayd to your "
 "compositor config instead."
 msgstr ""
 
-#: src/prefs.rs:397
+#: src/prefs.rs:392
 #, rust-format
 msgid "Remove {}"
 msgstr ""
@@ -710,6 +726,63 @@ msgstr ""
 msgid "Scene: {}"
 msgstr ""
 
+#: src/update.rs:50
+#, rust-format
+msgid "Cannot write {}"
+msgstr ""
+
+#: src/update.rs:69
+msgid "Updating… AniWay restarts by itself when it is ready"
+msgstr ""
+
+#: src/update.rs:77
+#, rust-format
+msgid "The update failed; details in {}"
+msgstr ""
+
+#: src/update.rs:87
+msgid "Updates unavailable"
+msgstr ""
+
+#: src/update.rs:88
+msgid ""
+"AniWay updates from the folder it was installed from, which is gone. Install "
+"it again with install.sh."
+msgstr ""
+
+#: src/update.rs:90 src/update.rs:106
+msgid "Close"
+msgstr ""
+
+#: src/update.rs:93
+msgid "Checking for updates…"
+msgstr ""
+
+#: src/update.rs:97
+msgid "Cannot check for updates"
+msgstr ""
+
+#: src/update.rs:97
+msgid "Check your connection and try again."
+msgstr ""
+
+#: src/update.rs:98
+msgid "AniWay is up to date"
+msgstr ""
+
+#: src/update.rs:100 src/update.rs:127
+msgid "An update is available"
+msgstr ""
+
+#: src/update.rs:101
+#, rust-format
+msgid "{} new changes. Updating takes a few minutes."
+msgstr ""
+
+#: src/update.rs:108 src/update.rs:127
+msgid "Update"
+msgstr ""
+
 #: src/window.rs:57
 msgid "Nudge the selected overlay by 1 px"
 msgstr ""
@@ -738,7 +811,7 @@ msgstr ""
 msgid "Remove the selected overlay (asks first)"
 msgstr ""
 
-#: src/window.rs:67 src/window.rs:267
+#: src/window.rs:67 src/window.rs:268
 msgid "Keyboard shortcuts"
 msgstr ""
 
@@ -807,50 +880,54 @@ msgstr ""
 msgid "New empty scene; the current one stays as it is"
 msgstr ""
 
-#: src/window.rs:253 src/window.rs:255 src/window.rs:256
-#: ../aniwayd/src/tray.rs:98
+#: src/window.rs:253 src/window.rs:255 src/window.rs:256 src/window.rs:482
+#: ../aniwayd/src/tray.rs:100
 msgid "Pause all"
 msgstr ""
 
-#: src/window.rs:259
+#: src/window.rs:260
 msgid "Hide until shown"
 msgstr ""
 
-#: src/window.rs:259
+#: src/window.rs:260
 msgid "Hide for 15 minutes"
 msgstr ""
 
-#: src/window.rs:259
+#: src/window.rs:260
 msgid "Hide for 1 hour"
 msgstr ""
 
-#: src/window.rs:263
+#: src/window.rs:264
 msgid "Hide 15 min"
 msgstr ""
 
-#: src/window.rs:268
-msgid "About AniWay"
+#: src/window.rs:269
+msgid "Check for updates"
 msgstr ""
 
 #: src/window.rs:270
+msgid "About AniWay"
+msgstr ""
+
+#: src/window.rs:272
 msgid "Main menu"
 msgstr ""
 
-#: src/window.rs:281
+#: src/window.rs:283
 msgid "Overlay list"
 msgstr ""
 
-#: src/window.rs:285
+#: src/window.rs:287
 msgid "Inspector"
 msgstr ""
 
-#: src/window.rs:419
+#: src/window.rs:429
 #, rust-format
 msgid "Show ({} min left)"
 msgstr ""
 
-#: src/window.rs:419
-msgid "Show"
+#: src/window.rs:480 ../aniwayd/src/tray.rs:98
+msgid "Resume all"
 msgstr ""
 
 #: ../aniwayd/src/tray.rs:70
@@ -885,10 +962,10 @@ msgstr ""
 msgid "For 1 hour"
 msgstr ""
 
-#: ../aniwayd/src/tray.rs:106
+#: ../aniwayd/src/tray.rs:103
 msgid "Open editor"
 msgstr ""
 
-#: ../aniwayd/src/tray.rs:111
+#: ../aniwayd/src/tray.rs:108
 msgid "Quit AniWay"
 msgstr ""

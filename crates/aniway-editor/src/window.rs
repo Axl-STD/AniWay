@@ -169,7 +169,7 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
     mode_pages.add_named(&map_page, Some("map"));
     mode_pages.add_named(&library.widget, Some("library"));
     mode_pages.set_vexpand(true);
-    let mode = adw::ToggleGroup::builder().halign(gtk::Align::Center).margin_top(6).margin_bottom(4).build();
+    let mode = adw::ToggleGroup::builder().halign(gtk::Align::Center).margin_top(14).margin_bottom(6).build();
     let map_button = adw::Toggle::builder().label(tr("Map")).name("map").build();
     let library_button = adw::Toggle::builder().label(tr("Library")).name("library").build();
     mode.add(map_button);
@@ -254,6 +254,7 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
     let pause =
         gtk::ToggleButton::builder().child(&pause_child).tooltip_text(tr("Pause all")).css_classes(["flat"]).build();
     pause.update_property(&[gtk::accessible::Property::Label(&tr("Pause all"))]);
+    let pause_icon = pause_child.first_child().and_downcast::<gtk::Image>().expect("icon_label starts with the icon");
     let hide_menu = gio::Menu::new();
     for (label, secs) in
         [(tr("Hide until shown"), 0), (tr("Hide for 15 minutes"), 15 * 60), (tr("Hide for 1 hour"), 3600)]
@@ -265,6 +266,7 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
     let main_menu = gio::Menu::new();
     main_menu.append(Some(&tr("Preferences")), Some("win.preferences"));
     main_menu.append(Some(&tr("Keyboard shortcuts")), Some("win.shortcuts"));
+    main_menu.append(Some(&tr("Check for updates")), Some("win.update"));
     main_menu.append(Some(&tr("About AniWay")), Some("win.about"));
     let menu = gtk::MenuButton::builder().icon_name("open-menu-symbolic").menu_model(&main_menu).primary(true).build();
     menu.update_property(&[gtk::accessible::Property::Label(&tr("Main menu"))]);
@@ -307,6 +309,14 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
     dialog("preferences", Rc::new(move |w| prefs.present(w)));
     dialog("shortcuts", Rc::new(|w| shortcuts().present(Some(w))));
     dialog("about", Rc::new(|w| about().present(Some(w))));
+    dialog(
+        "update",
+        Rc::new({
+            let ctl = ctl.clone();
+            move |w| crate::update::check(&ctl, w)
+        }),
+    );
+    crate::update::check_quietly(&ctl);
     app.set_accels_for_action("win.preferences", &["<Control>comma"]);
     app.set_accels_for_action("win.shortcuts", &["<Control>question"]);
     app.set_accels_for_action("win.add", &["<Control>o"]);
@@ -466,6 +476,15 @@ pub fn build(app: &adw::Application) -> adw::ApplicationWindow {
                 syncing.set(true);
                 pause.set_active(s.paused);
                 syncing.set(false);
+                let (icon, text) = if s.paused {
+                    ("media-playback-start-symbolic", tr("Resume all"))
+                } else {
+                    ("media-playback-pause-symbolic", tr("Pause all"))
+                };
+                pause_icon.set_icon_name(Some(icon));
+                pause_label.set_text(&text);
+                pause.set_tooltip_text(Some(&text));
+                pause.update_property(&[gtk::accessible::Property::Label(&text)]);
             }
             render_hide();
         }

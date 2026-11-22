@@ -163,6 +163,21 @@ fn css(hex: u32) -> String {
     format!("#{hex:06x}")
 }
 
+/// `a` blended toward `b` by `t` (0..1), per channel.
+fn mix(a: u32, b: u32, t: f32) -> u32 {
+    [16, 8, 0].iter().fold(0, |out, shift| {
+        let (x, y) = ((a >> shift & 255) as f32, (b >> shift & 255) as f32);
+        out | ((x + (y - x) * t).round() as u32) << shift
+    })
+}
+
+/// Whether black text reads better than white on `hex`: WCAG relative luminance above ~0.18.
+fn wants_dark_ink(hex: u32) -> bool {
+    let c = rgb(hex);
+    let lin = |v: f32| if v <= 0.04045 { v / 12.92 } else { ((v + 0.055) / 1.055).powf(2.4) };
+    0.2126 * lin(c.red()) + 0.7152 * lin(c.green()) + 0.0722 * lin(c.blue()) > 0.179
+}
+
 thread_local! {
     static CHOSEN: RefCell<String> = RefCell::default();
     static CURRENT: Cell<usize> = const { Cell::new(0) };
@@ -210,8 +225,8 @@ const COMMON: &str = "
 .vinyl { border-radius: 7px; padding: 0 7px; font-weight: 700; font-size: 11px; color: #1d1f23; letter-spacing: 0.04em; }
 .vinyl-0 { background: #ff5a5f; } .vinyl-1 { background: #ffd23f; } .vinyl-2 { background: #3bceac; }
 .vinyl-3 { background: #5f6cff; } .vinyl-4 { background: #c77dff; } .vinyl-5 { background: #ff9f45; }
-.row-delete { opacity: 0.4; }
-row:hover .row-delete, row:selected .row-delete, .row-delete:focus-visible { opacity: 1; }
+.row-action { opacity: 0.4; }
+row:hover .row-action, row:selected .row-action, .row-action:focus-visible, .row-action.off { opacity: 1; }
 .state { font-size: 12px; font-weight: 500; color: var(--warning-color); }
 .state.error { color: var(--error-color); }
 .thumb { border-radius: 12px; background: alpha(currentColor, 0.08); }
@@ -222,9 +237,9 @@ button.dropzone:hover { background: alpha(var(--accent-bg-color), 0.1); }
 button.dropzone.active { border-style: solid; border-color: var(--accent-bg-color); background: alpha(var(--accent-bg-color), 0.18); }
 .dropzone .title { font-weight: 700; font-size: 14px; }
 .dropzone .caption { color: var(--mute); }
-.secondary-action { background: alpha(var(--secondary-action-bg-color), 0.28); color: var(--secondary-action-fg-color); border-radius: 9px; }
-.secondary-action:hover { background: alpha(var(--secondary-action-bg-color), 0.42); }
-.secondary-action:active { background: alpha(var(--secondary-action-bg-color), 0.55); }
+.secondary-action { background: var(--secondary-action-bg-color); color: var(--secondary-action-fg-color); }
+.secondary-action:hover { background: mix(var(--secondary-action-bg-color), var(--accent-bg-color), 0.3); }
+.secondary-action:active { background: mix(var(--secondary-action-bg-color), var(--accent-bg-color), 0.5); }
 .hintbar { padding: 6px 16px 14px; color: var(--mute); font-size: 12px; }
 .keycap { font-size: 11px; font-weight: 600; padding: 0 6px; min-width: 12px; border-radius: 6px;
   border: 1px solid alpha(currentColor, 0.3); border-bottom-width: 2px; background: alpha(currentColor, 0.06); }
@@ -253,6 +268,8 @@ fn variables(t: &Theme) -> String {
     let (destructive, success, warning) =
         if t.dark { ("#ff7b63", "#78e9ab", "#ffc252") } else { ("#c30000", "#007c3d", "#9c6e03") };
     let shade = if t.dark { "rgba(0, 0, 6, 0.25)" } else { "rgba(0, 0, 6, 0.07)" };
+    // A softer accent for the second header button (New scene), with the ink that contrasts best.
+    let secondary = mix(t.accent, t.window, 0.45);
     let colours = [
         ("accent-bg", accent.clone()),
         ("accent", css(t.accent_text)),
@@ -298,8 +315,8 @@ fn variables(t: &Theme) -> String {
         ("warning-fg", "rgba(0, 0, 0, 0.8)".into()),
         ("warning", warning.into()),
         ("shade", shade.into()),
-        ("secondary-action-bg", css(VINYL[5])),
-        ("secondary-action-fg", css(VINYL_INK)),
+        ("secondary-action-bg", css(secondary)),
+        ("secondary-action-fg", (if wants_dark_ink(secondary) { "rgba(0, 0, 6, 0.85)" } else { "#ffffff" }).into()),
     ];
     let mut out = String::from(":root {");
     for (name, value) in &colours {

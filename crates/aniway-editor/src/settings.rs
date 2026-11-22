@@ -41,6 +41,11 @@ pub fn add_library_folder(path: &Path) -> io::Result<()> {
     save(&Settings { library: folders.iter().map(|folder| folder.to_string_lossy().into_owned()).collect(), ..load() })
 }
 
+/// Makes `path` the only library folder.
+pub fn set_library_folder(path: &Path) -> io::Result<()> {
+    save(&Settings { library: vec![path.to_string_lossy().into_owned()], ..load() })
+}
+
 /// Removes a folder from the effective library list and saves it.
 pub fn remove_library_folder(path: &Path) -> io::Result<()> {
     let current = load();

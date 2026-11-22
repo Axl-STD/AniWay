@@ -7,7 +7,7 @@ use aniway_proto::paths;
 use calloop::channel::{self, Sender};
 use gettextrs::gettext as tr;
 use ksni::blocking::TrayMethods;
-use ksni::menu::{CheckmarkItem, StandardItem, SubMenu};
+use ksni::menu::{StandardItem, SubMenu};
 use ksni::{MenuItem, ToolTip};
 
 pub type Handle = ksni::blocking::Handle<Tray>;
@@ -94,18 +94,15 @@ impl ksni::Tray for Tray {
             }
             .into()
         };
-        let pause = CheckmarkItem {
-            label: tr("Pause all"),
-            checked: self.paused,
-            activate: Box::new(|t: &mut Self| {
-                t.send(if t.paused { Request::Resume { id: None } } else { Request::Pause { id: None } })
-            }),
-            ..Default::default()
+        let pause = if self.paused {
+            item(tr("Resume all"), "media-playback-start-symbolic", |t| t.send(Request::Resume { id: None }))
+        } else {
+            item(tr("Pause all"), "media-playback-pause-symbolic", |t| t.send(Request::Pause { id: None }))
         };
         vec![
             item(tr("Open editor"), "document-edit-symbolic", Self::open_editor),
             MenuItem::Separator,
-            pause.into(),
+            pause,
             visibility,
             MenuItem::Separator,
             item(tr("Quit AniWay"), "application-exit-symbolic", |t| t.send(Request::Quit)),

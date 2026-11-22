@@ -1,5 +1,5 @@
-//! Overlay list (left pane): one row per overlay with its sticker number, monitor, format and length, a delete
-//! button that asks first, and the drop zone pinned underneath so media can be added however long the list is.
+//! Overlay list (left pane): one row per overlay with its sticker number, monitor, format and length, a show/hide
+//! button, a delete button that asks first, and the drop zone pinned underneath so media can be added however long the list is.
 
 use crate::client::Ctl;
 use crate::dropzone::DropZone;
@@ -7,7 +7,8 @@ use crate::map::{display_number, file_name, vinyl_index};
 use crate::media::Media;
 use crate::{ngettext, tr};
 use adw::prelude::*;
-use aniway_proto::ipc::{OverlayInfo, StateData};
+use aniway_proto::ipc::{OverlayInfo, Request, StateData};
+use aniway_proto::model::OverlayPatch;
 use aniway_proto::paths;
 use gtk::gio;
 use std::cell::{Cell, RefCell};
@@ -21,6 +22,7 @@ struct Row {
     duration: (gtk::Box, gtk::Label),
     state: gtk::Label,
     thumb: gtk::Image,
+    eye: gtk::Button,
 }
 
 pub struct List {
@@ -84,6 +86,7 @@ fn build_row(ctl: &Rc<Ctl>, id: &str) -> (gtk::ListBoxRow, Row) {
             .pixel_size(52)
             .overflow(gtk::Overflow::Hidden)
             .build(),
+        eye: gtk::Button::builder().valign(gtk::Align::Center).css_classes(["flat", "circular", "row-action"]).build(),
     };
     let title = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     title.append(&row.num);
@@ -97,10 +100,22 @@ fn build_row(ctl: &Rc<Ctl>, id: &str) -> (gtk::ListBoxRow, Row) {
     for w in [title.upcast_ref::<gtk::Widget>(), info.upcast_ref(), row.state.upcast_ref()] {
         text.append(w);
     }
+    let (c, id_for_eye) = (ctl.clone(), id.to_string());
+    row.eye.connect_clicked(move |_| {
+        let visible = c
+            .state
+            .borrow()
+            .as_ref()
+            .and_then(|s| s.overlays.iter().find(|o| o.config.id == id_for_eye).map(|o| o.config.visible));
+        if let Some(visible) = visible {
+            let patch = OverlayPatch { visible: Some(!visible), ..Default::default() };
+            c.send(Request::Set { id: id_for_eye.clone(), patch, transient: false });
+        }
+    });
     let delete = gtk::Button::builder()
         .icon_name("user-trash-symbolic")
         .valign(gtk::Align::Center)
-        .css_classes(["flat", "circular", "row-delete"])
+        .css_classes(["flat", "circular", "row-action"])
         .tooltip_text(tr("Remove…"))
         .build();
     let (c, id) = (ctl.clone(), id.to_string());
@@ -108,6 +123,7 @@ fn build_row(ctl: &Rc<Ctl>, id: &str) -> (gtk::ListBoxRow, Row) {
     let outer = gtk::Box::builder().spacing(12).margin_top(10).margin_bottom(10).margin_start(10).margin_end(6).build();
     outer.append(&row.thumb);
     outer.append(&text);
+    outer.append(&row.eye);
     outer.append(&delete);
     (gtk::ListBoxRow::builder().child(&outer).build(), row)
 }
@@ -147,6 +163,14 @@ impl Row {
         match media.and_then(|m| m.texture.as_ref()) {
             Some(t) => self.thumb.set_paintable(Some(t)),
             None => self.thumb.set_icon_name(Some("video-x-generic-symbolic")),
+        }
+        // A hidden overlay keeps its eye fully visible, so the row shows at a glance that it is off.
+        self.eye.set_icon_name(if c.visible { "view-reveal-symbolic" } else { "view-conceal-symbolic" });
+        self.eye.set_tooltip_text(Some(&if c.visible { tr("Hide") } else { tr("Show") }));
+        if c.visible {
+            self.eye.remove_css_class("off");
+        } else {
+            self.eye.add_css_class("off");
         }
         let line = state_line(state, ov);
         self.state.set_visible(line.is_some());

@@ -350,6 +350,9 @@ impl Prefs {
     }
 
     pub fn present(self: &Rc<Self>, parent: &impl IsA<gtk::Widget>) {
+        // The Library view can change the folders too.
+        self.settings.replace(settings::load());
+        self.rebuild_library();
         self.refresh_login();
         self.updating.set(true);
         let s = self.settings.borrow();

@@ -4,7 +4,7 @@ use crate::client::Ctl;
 use crate::media::{self, PREVIEW_FPS};
 use crate::tr;
 use adw::prelude::*;
-use aniway_proto::paths::{extension, is_media_extension};
+use aniway_proto::paths::{extension, home, is_media_extension};
 use gtk::{gio, glib};
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
@@ -163,6 +163,7 @@ pub struct Library {
     pub widget: gtk::Box,
     store: gio::ListStore,
     count: gtk::Label,
+    folder: gtk::Label,
     body: gtk::Stack,
     _preview_tx: async_channel::Sender<PreviewJob>,
 }
@@ -305,13 +306,21 @@ impl Library {
         grid_drop.connect_drop(|_, _, _, _| true);
         grid.add_controller(grid_drop);
         let count = gtk::Label::builder().css_classes(["dim-label"]).build();
+        let folder = gtk::Label::builder()
+            .css_classes(["dim-label", "caption"])
+            .ellipsize(gtk::pango::EllipsizeMode::Middle)
+            .hexpand(true)
+            .xalign(1.0)
+            .build();
+        let change = gtk::Button::builder().icon_name("folder-open-symbolic").tooltip_text(tr("Change folder")).build();
         let refresh =
             gtk::Button::builder().icon_name("view-refresh-symbolic").tooltip_text(tr("Refresh library")).build();
         let header =
             gtk::Box::builder().spacing(8).margin_start(12).margin_end(12).margin_top(10).margin_bottom(8).build();
         header.append(&gtk::Label::builder().label(tr("Library")).css_classes(["title-3"]).build());
         header.append(&count);
-        header.append(&gtk::Box::builder().hexpand(true).build());
+        header.append(&folder);
+        header.append(&change);
         header.append(&refresh);
         let empty = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -329,33 +338,27 @@ impl Library {
         let widget = gtk::Box::new(gtk::Orientation::Vertical, 0);
         widget.append(&header);
         widget.append(&body);
-        let this = Rc::new(Self { widget, store, count, body, _preview_tx: preview_tx });
+        let this = Rc::new(Self { widget, store, count, folder, body, _preview_tx: preview_tx });
         let weak = Rc::downgrade(&this);
         refresh.connect_clicked(move |_| {
             if let Some(this) = weak.upgrade() {
                 this.refresh();
             }
         });
+        // Both buttons replace the scanned folders with the chosen one; Preferences can list several.
         let weak = Rc::downgrade(&this);
-        let ctl_for_choose = ctl.clone();
-        choose.connect_clicked(move |_| {
-            let Some(this) = weak.upgrade() else {
-                return;
-            };
-            let dialog = gtk::FileDialog::new();
-            let ctl_for_choose = ctl_for_choose.clone();
-            dialog.select_folder(None::<&gtk::Window>, gio::Cancellable::NONE, move |r| {
-                if let Ok(folder) = r {
-                    if let Some(path) = folder.path() {
-                        if let Err(error) = crate::settings::add_library_folder(&path) {
-                            ctl_for_choose.toast(&error.to_string());
-                        } else {
-                            this.refresh();
-                        }
-                    }
+        let pick = move |_: &gtk::Button| {
+            let (Some(this), ctl) = (weak.upgrade(), ctl.clone()) else { return };
+            gtk::FileDialog::new().select_folder(None::<&gtk::Window>, gio::Cancellable::NONE, move |r| {
+                let Some(path) = r.ok().and_then(|folder| folder.path()) else { return };
+                match crate::settings::set_library_folder(&path) {
+                    Ok(()) => this.refresh(),
+                    Err(error) => ctl.toast(&error.to_string()),
                 }
             });
-        });
+        };
+        choose.connect_clicked(pick.clone());
+        change.connect_clicked(pick);
         this.refresh();
         this
     }
@@ -365,8 +368,16 @@ impl Library {
         let store = self.store.clone();
         let count = self.count.clone();
         let body = self.body.clone();
+        let folders = crate::settings::library_folders();
+        let shown: Vec<String> = folders.iter().map(|f| tilde(f)).collect();
+        self.folder.set_text(&match shown.len() {
+            0 => tr("No folder"),
+            1 => shown[0].clone(),
+            n => format!("{} (+{})", shown[0], n - 1),
+        });
+        self.folder.set_tooltip_text(Some(&shown.join("\n")));
         glib::spawn_future_local(async move {
-            let files = scan_async(crate::settings::library_folders()).await;
+            let files = scan_async(folders).await;
             store.remove_all();
             for path in &files {
                 store.append(&gtk::StringObject::new(path));
@@ -375,6 +386,11 @@ impl Library {
             body.set_visible_child_name(if files.is_empty() { "empty" } else { "grid" });
         });
     }
+}
+
+/// The path with the home directory written as `~`.
+fn tilde(path: &Path) -> String {
+    path.strip_prefix(home()).map_or_else(|_| path.display().to_string(), |rest| format!("~/{}", rest.display()))
 }
 
 #[cfg(test)]

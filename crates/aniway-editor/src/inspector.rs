@@ -295,7 +295,7 @@ impl Inspector {
                 .icon_name("object-flip-vertical-symbolic")
                 .tooltip_text(tr("Flip vertically"))
                 .build(),
-            rotation: gtk::Label::builder().width_chars(4).xalign(1.0).build(),
+            rotation: gtk::Label::builder().width_chars(5).xalign(0.5).build(),
             rotate_left: gtk::Button::builder()
                 .icon_name("object-rotate-left-symbolic")
                 .tooltip_text(tr("Rotate left"))
@@ -503,6 +503,13 @@ impl Inspector {
         }
     }
 
+    /// An edit from a button (no drag to wait for): saved right away and shown before the daemon confirms it.
+    fn edit_now(self: &Rc<Self>, f: impl FnOnce(&mut OverlayPatch)) {
+        self.edit(f);
+        self.ctl.commit();
+        self.update();
+    }
+
     fn wire(self: &Rc<Self>) {
         self.preview_toggle.connect_clicked(glib::clone!(
             #[weak(rename_to = this)]
@@ -557,8 +564,6 @@ impl Inspector {
         on!(optimize, connect_active_notify, |t, r, p| p.optimize = Some(r.is_active()));
         on!(width, connect_value_notify, |t, r, p| p.width = Some(r.value() as u32));
         on!(height, connect_value_notify, |t, r, p| p.height = Some(r.value() as u32));
-        on!(flip_h, connect_toggled, |t, r, p| p.flip_h = Some(r.is_active()));
-        on!(flip_v, connect_toggled, |t, r, p| p.flip_v = Some(r.is_active()));
         on!(fps_value, connect_value_notify, |t, r, p| p.max_fps =
             t.fps.enables_expansion().then_some(r.value() as u32));
         on!(fps, connect_enable_expansion_notify, |t, r, p| p.max_fps =
@@ -568,12 +573,22 @@ impl Inspector {
             p.width = Some(if on { t.width.value() as u32 } else { 0 });
             p.height = Some(if on { t.height.value() as u32 } else { 0 });
         });
+        // Picking an anchor (again) snaps the overlay to it: the offsets go back to zero.
         for (anchor, button) in ANCHORS.into_iter().zip(&self.anchors) {
             let this = self.clone();
-            button.connect_toggled(move |b| {
-                if b.is_active() {
-                    this.edit(|p| p.anchor = Some(anchor));
-                }
+            button.connect_clicked(move |_| {
+                this.edit_now(|p| {
+                    p.anchor = Some(anchor);
+                    p.x = Some(0);
+                    p.y = Some(0);
+                })
+            });
+        }
+        for (button, horizontal) in [(&self.flip_h, true), (&self.flip_v, false)] {
+            let this = self.clone();
+            button.connect_clicked(move |b| {
+                let on = Some(b.is_active());
+                this.edit_now(|p| if horizontal { p.flip_h = on } else { p.flip_v = on });
             });
         }
         for (button, step) in [(&self.rotate_left, 270u16), (&self.rotate_right, 90)] {
@@ -588,14 +603,16 @@ impl Inspector {
                         .view()
                         .and_then(|s| s.overlays.into_iter().find(|o| Some(&o.config.id) == id.as_ref()))
                         .map_or(0, |o| o.config.rotation);
-                    this.edit(|p| p.rotation = Some((current + step) % 360));
+                    this.edit_now(|p| p.rotation = Some((current + step) % 360));
                 },
             ));
         }
     }
 
     pub fn update(self: &Rc<Self>) {
-        let state = self.ctl.state.borrow();
+        // The view carries the unconfirmed edit, so the controls never jump back while the daemon catches up.
+        let view = self.ctl.view();
+        let state = &view;
         let selected = self.ctl.selected.borrow();
         let overlay = state
             .as_ref()

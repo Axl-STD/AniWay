@@ -9,6 +9,7 @@ mod prefs;
 mod scenes;
 mod settings;
 mod theme;
+mod update;
 mod window;
 
 use adw::prelude::*;
