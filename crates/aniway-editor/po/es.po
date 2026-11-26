@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aniway\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 22:12-0600\n"
+"POT-Creation-Date: 2026-11-25 19:35-0600\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -326,34 +326,67 @@ msgstr "Escena"
 msgid "Add"
 msgstr "Añadir"
 
-#: src/library.rs:315
+#: src/library.rs:323
 msgid "Change folder"
 msgstr "Cambiar carpeta"
 
-#: src/library.rs:317
+#: src/library.rs:325
 msgid "Refresh library"
 msgstr "Actualizar biblioteca"
 
-#: src/library.rs:320 src/window.rs:174
+#: src/library.rs:331 src/window.rs:174
 msgid "Library"
 msgstr "Biblioteca"
 
-#: src/library.rs:332
+#: src/library.rs:341
+#, rust-format
+msgid "{} item"
+msgid_plural "{} items"
+msgstr[0] "{} elemento"
+msgstr[1] "{} elementos"
+
+#: src/library.rs:355
 msgid "Choose a folder to browse media"
 msgstr "Elige una carpeta para explorar contenido"
 
-#: src/library.rs:333
+#: src/library.rs:356
 msgid "Choose a folder"
 msgstr "Elegir una carpeta"
 
-#: src/library.rs:374
+#: src/library.rs:397
 msgid "No folder"
 msgstr "Sin carpeta"
 
-#: src/library.rs:385
+#: src/library.rs:419 src/list.rs:61 src/scenes.rs:121 src/scenes.rs:279
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/library.rs:435
 #, rust-format
-msgid "{} items"
-msgstr "{} elementos"
+msgid "Delete {}?"
+msgstr "¿Eliminar {}?"
+
+#: src/library.rs:436
+msgid "The file goes to the trash. Overlays that use it stop showing it."
+msgstr ""
+"El archivo va a la papelera. Los overlays que lo usan dejan de mostrarlo."
+
+#: src/library.rs:437
+msgid "Move to trash"
+msgstr "Mover a la papelera"
+
+#: src/library.rs:447
+msgid "No trash here"
+msgstr "Sin papelera aquí"
+
+#: src/library.rs:448
+#, rust-format
+msgid "{} cannot go to the trash. Delete it for good?"
+msgstr "{} no puede ir a la papelera. ¿Eliminarlo definitivamente?"
+
+#: src/library.rs:449 src/scenes.rs:279
+msgid "Delete"
+msgstr "Eliminar"
 
 #: src/list.rs:58
 #, rust-format
@@ -363,10 +396,6 @@ msgstr "¿Quitar {}?"
 #: src/list.rs:59
 msgid "It leaves the screen and this scene. The file itself is kept."
 msgstr "Desaparece de la pantalla y de esta escena. El archivo no se borra."
-
-#: src/list.rs:61 src/scenes.rs:121 src/scenes.rs:273
-msgid "Cancel"
-msgstr "Cancelar"
 
 #: src/list.rs:61 src/prefs.rs:221 src/prefs.rs:390
 msgid "Remove"
@@ -668,69 +697,65 @@ msgstr "Ninguno"
 msgid "Press the keys…"
 msgstr "Pulsa las teclas…"
 
-#: src/scenes.rs:229 src/window.rs:65 src/window.rs:246
+#: src/scenes.rs:235 src/window.rs:65 src/window.rs:246
 msgid "New scene"
 msgstr "Nueva escena"
 
-#: src/scenes.rs:229
+#: src/scenes.rs:235
 msgid "Create"
 msgstr "Crear"
 
-#: src/scenes.rs:241
+#: src/scenes.rs:247
 msgid "Duplicate scene"
 msgstr "Duplicar escena"
 
-#: src/scenes.rs:241
+#: src/scenes.rs:247
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: src/scenes.rs:254
+#: src/scenes.rs:260
 #, rust-format
 msgid "Edit scene {}"
 msgstr "Editar la escena {}"
 
-#: src/scenes.rs:256
+#: src/scenes.rs:262
 msgid "Save"
 msgstr "Guardar"
 
-#: src/scenes.rs:270
+#: src/scenes.rs:276
 #, rust-format
 msgid "Delete scene {}?"
 msgstr "¿Eliminar la escena {}?"
 
-#: src/scenes.rs:271
+#: src/scenes.rs:277
 msgid "The scene file is removed from disk, with its shortcut."
 msgstr "El archivo de la escena se borra del disco, junto con su atajo."
 
-#: src/scenes.rs:273
-msgid "Delete"
-msgstr "Eliminar"
-
-#: src/scenes.rs:307
+#: src/scenes.rs:313
 msgid "New empty scene…"
 msgstr "Nueva escena vacía…"
 
-#: src/scenes.rs:308
+#: src/scenes.rs:314
 msgid "Duplicate this scene…"
 msgstr "Duplicar esta escena…"
 
-#: src/scenes.rs:310
+#: src/scenes.rs:316
 msgid "Changes save to the active scene as you make them."
 msgstr "Los cambios se guardan solos en la escena activa."
 
-#: src/scenes.rs:318 src/scenes.rs:334
+#: src/scenes.rs:324 src/scenes.rs:340
 msgid "Scenes"
 msgstr "Escenas"
 
-#: src/scenes.rs:336
+#: src/scenes.rs:342
 msgid "Rename or set a shortcut…"
 msgstr "Renombrar o asignar un atajo…"
 
-#: src/scenes.rs:336
+#: src/scenes.rs:342
 msgid "Delete scene…"
 msgstr "Eliminar la escena…"
 
-#: src/scenes.rs:427
+#: src/scenes.rs:433
 #, rust-format
 msgid "Scene: {}"
 msgstr "Escena: {}"
@@ -756,11 +781,12 @@ msgstr "Actualizaciones no disponibles"
 #: src/update.rs:88
 msgid ""
 "AniWay updates from the folder it was installed from, which is gone. Install "
-"it again with install.sh."msgstr ""
+"it again with install.sh."
+msgstr ""
 "AniWay se actualiza desde la carpeta donde se instaló, que ya no existe. "
 "Instálalo de nuevo con install.sh."
 
-#: src/update.rs:90 src/update.rs:106
+#: src/update.rs:90 src/update.rs:108
 msgid "Close"
 msgstr "Cerrar"
 
@@ -768,28 +794,28 @@ msgstr "Cerrar"
 msgid "Checking for updates…"
 msgstr "Buscando actualizaciones…"
 
-#: src/update.rs:97
+#: src/update.rs:98
 msgid "Cannot check for updates"
 msgstr "No se pudo buscar actualizaciones"
 
-#: src/update.rs:97
+#: src/update.rs:98
 msgid "Check your connection and try again."
 msgstr "Revisa tu conexión e inténtalo de nuevo."
 
-#: src/update.rs:98
+#: src/update.rs:99
 msgid "AniWay is up to date"
 msgstr "AniWay está al día"
 
-#: src/update.rs:100 src/update.rs:127
+#: src/update.rs:101 src/update.rs:129
 msgid "An update is available"
 msgstr "Hay una actualización disponible"
 
-#: src/update.rs:101
+#: src/update.rs:102
 #, rust-format
 msgid "{} new changes. Updating takes a few minutes."
 msgstr "{} cambios nuevos. La actualización tarda unos minutos."
 
-#: src/update.rs:108 src/update.rs:127
+#: src/update.rs:110 src/update.rs:129
 msgid "Update"
 msgstr "Actualizar"
 

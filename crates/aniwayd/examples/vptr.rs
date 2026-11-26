@@ -1,7 +1,7 @@
 //! Test client: sends one left click at the current cursor position through wlr-virtual-pointer.
 //! With `DX DY` arguments the button is held while the pointer moves by that many pixels, then released;
 //! a third `HOLD_MS` argument keeps it pressed that long first (time to take a screenshot).
-//! `scroll N` sends N wheel steps instead (negative scrolls up).
+//! `scroll N` sends N wheel steps instead (negative scrolls up); `right` clicks the right button.
 use anyhow::{Context, Result};
 use smithay_client_toolkit::reexports::client::globals::{registry_queue_init, GlobalListContents};
 use smithay_client_toolkit::reexports::client::protocol::wl_pointer::{self, ButtonState};
@@ -12,6 +12,7 @@ use smithay_client_toolkit::reexports::protocols_wlr::virtual_pointer::v1::clien
 };
 
 const BTN_LEFT: u32 = 0x110;
+const BTN_RIGHT: u32 = 0x111;
 
 struct Idle;
 
@@ -73,7 +74,8 @@ fn main() -> Result<()> {
         queue.roundtrip(&mut state)?;
         return Ok(());
     }
-    pointer.button(now(), BTN_LEFT, ButtonState::Pressed);
+    let button = if std::env::args().nth(1).as_deref() == Some("right") { BTN_RIGHT } else { BTN_LEFT };
+    pointer.button(now(), button, ButtonState::Pressed);
     pointer.frame();
     queue.roundtrip(&mut state)?;
     if let [dx, dy, ..] = delta[..] {
@@ -87,7 +89,7 @@ fn main() -> Result<()> {
     if let [_, _, hold] = delta[..] {
         std::thread::sleep(std::time::Duration::from_millis(hold as u64));
     }
-    pointer.button(now(), BTN_LEFT, ButtonState::Released);
+    pointer.button(now(), button, ButtonState::Released);
     pointer.frame();
     queue.roundtrip(&mut state)?;
     pointer.destroy();

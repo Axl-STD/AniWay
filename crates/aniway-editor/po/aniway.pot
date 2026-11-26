@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aniway\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 22:12-0600\n"
+"POT-Creation-Date: 2026-11-25 19:35-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -327,33 +327,65 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: src/library.rs:315
+#: src/library.rs:323
 msgid "Change folder"
 msgstr ""
 
-#: src/library.rs:317
+#: src/library.rs:325
 msgid "Refresh library"
 msgstr ""
 
-#: src/library.rs:320 src/window.rs:174
+#: src/library.rs:331 src/window.rs:174
 msgid "Library"
 msgstr ""
 
-#: src/library.rs:332
+#: src/library.rs:341
+#, rust-format
+msgid "{} item"
+msgid_plural "{} items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/library.rs:355
 msgid "Choose a folder to browse media"
 msgstr ""
 
-#: src/library.rs:333
+#: src/library.rs:356
 msgid "Choose a folder"
 msgstr ""
 
-#: src/library.rs:374
+#: src/library.rs:397
 msgid "No folder"
 msgstr ""
 
-#: src/library.rs:385
+#: src/library.rs:419 src/list.rs:61 src/scenes.rs:121 src/scenes.rs:279
+msgid "Cancel"
+msgstr ""
+
+#: src/library.rs:435
 #, rust-format
-msgid "{} items"
+msgid "Delete {}?"
+msgstr ""
+
+#: src/library.rs:436
+msgid "The file goes to the trash. Overlays that use it stop showing it."
+msgstr ""
+
+#: src/library.rs:437
+msgid "Move to trash"
+msgstr ""
+
+#: src/library.rs:447
+msgid "No trash here"
+msgstr ""
+
+#: src/library.rs:448
+#, rust-format
+msgid "{} cannot go to the trash. Delete it for good?"
+msgstr ""
+
+#: src/library.rs:449 src/scenes.rs:279
+msgid "Delete"
 msgstr ""
 
 #: src/list.rs:58
@@ -363,10 +395,6 @@ msgstr ""
 
 #: src/list.rs:59
 msgid "It leaves the screen and this scene. The file itself is kept."
-msgstr ""
-
-#: src/list.rs:61 src/scenes.rs:121 src/scenes.rs:273
-msgid "Cancel"
 msgstr ""
 
 #: src/list.rs:61 src/prefs.rs:221 src/prefs.rs:390
@@ -659,69 +687,65 @@ msgstr ""
 msgid "Press the keys…"
 msgstr ""
 
-#: src/scenes.rs:229 src/window.rs:65 src/window.rs:246
+#: src/scenes.rs:235 src/window.rs:65 src/window.rs:246
 msgid "New scene"
 msgstr ""
 
-#: src/scenes.rs:229
+#: src/scenes.rs:235
 msgid "Create"
 msgstr ""
 
-#: src/scenes.rs:241
+#: src/scenes.rs:247
 msgid "Duplicate scene"
 msgstr ""
 
-#: src/scenes.rs:241
+#: src/scenes.rs:247
 msgid "Duplicate"
 msgstr ""
 
-#: src/scenes.rs:254
+#: src/scenes.rs:260
 #, rust-format
 msgid "Edit scene {}"
 msgstr ""
 
-#: src/scenes.rs:256
+#: src/scenes.rs:262
 msgid "Save"
 msgstr ""
 
-#: src/scenes.rs:270
+#: src/scenes.rs:276
 #, rust-format
 msgid "Delete scene {}?"
 msgstr ""
 
-#: src/scenes.rs:271
+#: src/scenes.rs:277
 msgid "The scene file is removed from disk, with its shortcut."
 msgstr ""
 
-#: src/scenes.rs:273
-msgid "Delete"
-msgstr ""
-
-#: src/scenes.rs:307
+#: src/scenes.rs:313
 msgid "New empty scene…"
 msgstr ""
 
-#: src/scenes.rs:308
+#: src/scenes.rs:314
 msgid "Duplicate this scene…"
 msgstr ""
 
-#: src/scenes.rs:310
+#: src/scenes.rs:316
 msgid "Changes save to the active scene as you make them."
 msgstr ""
 
-#: src/scenes.rs:318 src/scenes.rs:334
+#: src/scenes.rs:324 src/scenes.rs:340
 msgid "Scenes"
 msgstr ""
 
-#: src/scenes.rs:336
+#: src/scenes.rs:342
 msgid "Rename or set a shortcut…"
 msgstr ""
 
-#: src/scenes.rs:336
+#: src/scenes.rs:342
 msgid "Delete scene…"
 msgstr ""
 
-#: src/scenes.rs:427
+#: src/scenes.rs:433
 #, rust-format
 msgid "Scene: {}"
 msgstr ""
@@ -750,7 +774,7 @@ msgid ""
 "it again with install.sh."
 msgstr ""
 
-#: src/update.rs:90 src/update.rs:106
+#: src/update.rs:90 src/update.rs:108
 msgid "Close"
 msgstr ""
 
@@ -758,28 +782,28 @@ msgstr ""
 msgid "Checking for updates…"
 msgstr ""
 
-#: src/update.rs:97
+#: src/update.rs:98
 msgid "Cannot check for updates"
 msgstr ""
 
-#: src/update.rs:97
+#: src/update.rs:98
 msgid "Check your connection and try again."
 msgstr ""
 
-#: src/update.rs:98
+#: src/update.rs:99
 msgid "AniWay is up to date"
 msgstr ""
 
-#: src/update.rs:100 src/update.rs:127
+#: src/update.rs:101 src/update.rs:129
 msgid "An update is available"
 msgstr ""
 
-#: src/update.rs:101
+#: src/update.rs:102
 #, rust-format
 msgid "{} new changes. Updating takes a few minutes."
 msgstr ""
 
-#: src/update.rs:108 src/update.rs:127
+#: src/update.rs:110 src/update.rs:129
 msgid "Update"
 msgstr ""
 

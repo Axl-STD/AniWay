@@ -2,7 +2,7 @@
 
 use crate::client::Ctl;
 use crate::media::{self, PREVIEW_FPS};
-use crate::tr;
+use crate::{ngettext, tr};
 use adw::prelude::*;
 use aniway_proto::paths::{extension, home, is_media_extension};
 use gtk::{gio, glib};
@@ -162,7 +162,6 @@ type CellEntry = (gtk::Button, Rc<RefCell<CellState>>);
 pub struct Library {
     pub widget: gtk::Box,
     store: gio::ListStore,
-    count: gtk::Label,
     folder: gtk::Label,
     body: gtk::Stack,
     _preview_tx: async_channel::Sender<PreviewJob>,
@@ -207,6 +206,7 @@ impl Library {
         let cells: Rc<RefCell<Vec<CellEntry>>> = Rc::default();
         let ctl_for_setup = ctl.clone();
         let cells_for_setup = cells.clone();
+        let store_for_setup = store.clone();
         factory.connect_setup(move |_, object| {
             let Some(item) = object.downcast_ref::<gtk::ListItem>() else {
                 return;
@@ -244,6 +244,14 @@ impl Library {
                 Some(gtk::gdk::ContentProvider::for_value(&files.to_value()))
             });
             button.add_controller(source);
+            let menu = gtk::GestureClick::builder().button(3).build();
+            let (menu_button, store) = (button.clone(), store_for_setup.clone());
+            menu.connect_pressed(move |_, _, _, _| {
+                if let Some(path) = menu_button.tooltip_text() {
+                    confirm_trash(&menu_button, path.to_string(), store.clone());
+                }
+            });
+            button.add_controller(menu);
             cells_for_setup.borrow_mut().push((button.clone(), cell));
             item.set_child(Some(&button));
         });
@@ -317,7 +325,22 @@ impl Library {
             gtk::Button::builder().icon_name("view-refresh-symbolic").tooltip_text(tr("Refresh library")).build();
         let header =
             gtk::Box::builder().spacing(8).margin_start(12).margin_end(12).margin_top(10).margin_bottom(8).build();
-        header.append(&gtk::Label::builder().label(tr("Library")).css_classes(["title-3"]).build());
+        // Title and count share a baseline, whatever their font sizes.
+        header.append(
+            &gtk::Label::builder()
+                .label(tr("Library"))
+                .css_classes(["title-3"])
+                .valign(gtk::Align::BaselineCenter)
+                .build(),
+        );
+        count.set_valign(gtk::Align::BaselineCenter);
+        let weak_count = count.downgrade();
+        store.connect_items_changed(move |store, _, _, _| {
+            let n = store.n_items();
+            if let Some(count) = weak_count.upgrade() {
+                count.set_text(&ngettext("{} item", "{} items", n).replace("{}", &n.to_string()));
+            }
+        });
         header.append(&count);
         header.append(&folder);
         header.append(&change);
@@ -333,12 +356,13 @@ impl Library {
         let choose = gtk::Button::builder().label(tr("Choose a folder")).css_classes(["suggested-action"]).build();
         empty.append(&choose);
         let body = gtk::Stack::new();
-        body.add_named(&grid, Some("grid"));
+        let scroller = gtk::ScrolledWindow::builder().child(&grid).hscrollbar_policy(gtk::PolicyType::Never).build();
+        body.add_named(&scroller, Some("grid"));
         body.add_named(&empty, Some("empty"));
         let widget = gtk::Box::new(gtk::Orientation::Vertical, 0);
         widget.append(&header);
         widget.append(&body);
-        let this = Rc::new(Self { widget, store, count, folder, body, _preview_tx: preview_tx });
+        let this = Rc::new(Self { widget, store, folder, body, _preview_tx: preview_tx });
         let weak = Rc::downgrade(&this);
         refresh.connect_clicked(move |_| {
             if let Some(this) = weak.upgrade() {
@@ -366,7 +390,6 @@ impl Library {
     /// Rescans effective folders and updates the grid or empty state.
     pub fn refresh(&self) {
         let store = self.store.clone();
-        let count = self.count.clone();
         let body = self.body.clone();
         let folders = crate::settings::library_folders();
         let shown: Vec<String> = folders.iter().map(|f| tilde(f)).collect();
@@ -382,10 +405,63 @@ impl Library {
             for path in &files {
                 store.append(&gtk::StringObject::new(path));
             }
-            count.set_text(&tr("{} items").replace("{}", &files.len().to_string()));
             body.set_visible_child_name(if files.is_empty() { "empty" } else { "grid" });
         });
     }
+}
+
+/// Right click on a cell: asks, then moves the file to the trash and drops it from the grid. Where there is no
+/// trash (another mount, no permission) it offers to delete the file for good instead.
+fn confirm_trash(parent: &gtk::Button, path: String, store: gio::ListStore) {
+    let name = path.rsplit('/').next().unwrap_or(&path).to_string();
+    let ask = |heading: String, body: String, action: String| {
+        let dialog = adw::AlertDialog::new(Some(&heading), Some(&body));
+        dialog.add_responses(&[("cancel", &tr("Cancel")), ("delete", &action)]);
+        dialog.set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+        dialog.set_close_response("cancel");
+        dialog
+    };
+    let drop_item = move |store: &gio::ListStore, path: &str| {
+        let found = (0..store.n_items())
+            .find(|&i| store.item(i).and_downcast::<gtk::StringObject>().is_some_and(|o| o.string() == path));
+        if let Some(i) = found {
+            store.remove(i);
+        }
+    };
+    let file = gio::File::for_path(&path);
+    let toasts = parent.ancestor(adw::ToastOverlay::static_type()).and_downcast::<adw::ToastOverlay>();
+    let parent = parent.clone();
+    ask(
+        tr("Delete {}?").replace("{}", &name),
+        tr("The file goes to the trash. Overlays that use it stop showing it."),
+        tr("Move to trash"),
+    )
+    .choose(Some(&parent.clone()), gio::Cancellable::NONE, move |r| {
+        if r != "delete" {
+            return;
+        }
+        if file.trash(gio::Cancellable::NONE).is_ok() {
+            return drop_item(&store, &path);
+        }
+        ask(
+            tr("No trash here"),
+            tr("{} cannot go to the trash. Delete it for good?").replace("{}", &name),
+            tr("Delete"),
+        )
+        .choose(Some(&parent), gio::Cancellable::NONE, move |r| {
+            if r != "delete" {
+                return;
+            }
+            match file.delete(gio::Cancellable::NONE) {
+                Ok(()) => drop_item(&store, &path),
+                Err(e) => {
+                    if let Some(t) = &toasts {
+                        t.add_toast(adw::Toast::new(&e.to_string()));
+                    }
+                }
+            }
+        });
+    });
 }
 
 /// The path with the home directory written as `~`.

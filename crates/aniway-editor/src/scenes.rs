@@ -169,10 +169,16 @@ fn scene_dialog(
         record,
         #[upgrade_or]
         glib::Propagation::Proceed,
-        move |_, key, _, mods| {
+        move |controller, key, code, mods| {
             if !record.is_active() {
                 return glib::Propagation::Proceed;
             }
+            // SHIFT changes the keysym ("1" becomes "exclam"); record the unshifted key so SUPER + SHIFT + 1 works.
+            let key = controller
+                .widget()
+                .map(|w| w.display())
+                .and_then(|d| d.translate_key(code, gdk::ModifierType::empty(), 0))
+                .map_or(key, |(base, ..)| base);
             if key == gdk::Key::Escape {
                 record.set_active(false);
             } else if let Some(k) = keys_of(key, mods) {
